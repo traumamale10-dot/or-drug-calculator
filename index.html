@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>OR Drug Calculator · สรพ.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ──────────────────────────────────────────────── */
+:root {
+  --bg:       #ebeff5;
+  --surf:     #ffffff;
+  --raise:    #f4f6fb;
+  --acc:      #0055ff;
+  --acc-d:    rgba(0,85,255,.12);
+  --acc-g:    rgba(0,85,255,.2);
+  --red:      #dc2626; --red-d: rgba(220,38,38,.1);
+  --ora:      #c2670a; --ora-d: rgba(194,103,10,.1);
+  --grn:      #0a7c52; --grn-d: rgba(10,124,82,.1);
+  --t1:#0d1525; --t2:#4f5d73; --t3:#9aaabb;
+  --bd:rgba(0,0,0,.07); --bds:rgba(0,0,0,.13);
+  --sh1:0 1px 4px rgba(0,0,0,.06);
+  --sh2:0 6px 24px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);
+  --sh3:0 20px 60px rgba(0,0,0,.13),0 6px 20px rgba(0,0,0,.07);
+  --hdr:#080f20;
+  --r1:10px;--r2:16px;--r3:22px;--r4:30px;
+  --font:'Sarabun',sans-serif; --mono:'JetBrains Mono',monospace;
+}
+[data-theme=dark]{
+  --bg:#090d17; --surf:#101520; --raise:#171e2d;
+  --acc:#4d9eff; --acc-d:rgba(77,158,255,.13); --acc-g:rgba(77,158,255,.22);
+  --red:#f87171; --red-d:rgba(248,113,113,.12);
+  --ora:#fbbf24; --ora-d:rgba(251,191,36,.12);
+  --grn:#34d399; --grn-d:rgba(52,211,153,.12);
+  --t1:#dde6f5; --t2:#7088a8; --t3:#2e3d52;
+  --bd:rgba(255,255,255,.06); --bds:rgba(255,255,255,.11);
+  --sh1:0 1px 4px rgba(0,0,0,.3);
+  --sh2:0 6px 24px rgba(0,0,0,.45);
+  --sh3:0 20px 60px rgba(0,0,0,.65);
+  --hdr:#040810;
+}
+
+/* ── RESET ───────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--t1);
+  min-height:100vh;transition:background .3s,color .3s;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bds);border-radius:9px}
+
+/* ── HEADER ──────────────────────────────────────────────── */
+.hdr{background:var(--hdr);position:sticky;top:0;z-index:300;
+  box-shadow:0 2px 30px rgba(0,0,0,.4);transition:background .3s}
+.hi{max-width:1260px;margin:0 auto;padding:13px 24px;
+  display:flex;align-items:center;gap:14px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-ring{width:44px;height:44px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(140deg,#1a72ff,#0038cc);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  box-shadow:0 4px 18px rgba(26,114,255,.45);animation:lglow 3s ease-in-out infinite}
+@keyframes lglow{0%,100%{box-shadow:0 4px 18px rgba(26,114,255,.4)}50%{box-shadow:0 4px 28px rgba(26,114,255,.65)}}
+.logo h1{font-size:19px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.logo p{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+
+/* weight bar in header */
+.w-bar{display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
+  border-radius:var(--r4);padding:6px 14px 6px 10px}
+.w-bar label{font-size:12px;color:rgba(255,255,255,.6);font-weight:600;white-space:nowrap}
+.w-bar input{background:transparent;border:none;outline:none;color:#fff;
+  font-size:16px;font-weight:700;font-family:var(--mono);width:72px;text-align:center}
+.w-bar input::placeholder{color:rgba(255,255,255,.3)}
+.w-bar span{font-size:12px;color:rgba(255,255,255,.5);font-weight:600}
+
+/* pedi toggle */
+.p-toggle{display:flex;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);border-radius:var(--r4);overflow:hidden}
+.pt-btn{padding:8px 14px;font-size:12px;font-weight:700;color:rgba(255,255,255,.55);
+  cursor:pointer;border:none;background:none;font-family:var(--font);
+  transition:all .2s;white-space:nowrap}
+.pt-btn.on{background:var(--acc);color:#fff;border-radius:var(--r4)}
+
+/* theme pill */
+.tpill{width:52px;height:28px;background:rgba(255,255,255,.1);
+  border:1.5px solid rgba(255,255,255,.18);border-radius:99px;
+  cursor:pointer;position:relative;flex-shrink:0;transition:background .3s}
+.tpill:hover{background:rgba(255,255,255,.16)}
+.tknob{position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;
+  background:#fff;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+[data-theme=dark] .tknob{transform:translateX(24px);background:#4d9eff}
+.tico{position:absolute;top:50%;transform:translateY(-50%);font-size:10px;pointer-events:none}
+.sun{right:6px;transition:opacity .2s}
+.moon{left:6px;opacity:0;transition:opacity .2s}
+[data-theme=dark] .sun{opacity:0}
+[data-theme=dark] .moon{opacity:1}
+
+/* ── MAIN LAYOUT ─────────────────────────────────────────── */
+.wrap{max-width:1260px;margin:0 auto;padding:24px 20px;
+  display:grid;grid-template-columns:340px 1fr;gap:20px;min-height:calc(100vh - 70px)}
+
+/* ── LEFT PANEL (drug list) ──────────────────────────────── */
+.left{display:flex;flex-direction:column;gap:14px}
+.search-box{position:relative}
+.search-box input{width:100%;padding:13px 46px 13px 46px;
+  background:var(--surf);border:2px solid var(--bd);border-radius:var(--r4);
+  font-size:15px;font-family:var(--font);color:var(--t1);
+  transition:border-color .2s,box-shadow .2s;box-shadow:var(--sh1)}
+.search-box input:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 4px var(--acc-g)}
+.search-box input::placeholder{color:var(--t3)}
+.sico{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:18px}
+.sclr{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:var(--t3);color:var(--surf);border:none;border-radius:50%;
+  width:24px;height:24px;font-size:12px;cursor:pointer;
+  display:none;align-items:center;justify-content:center}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:6px 14px;border-radius:99px;border:1.5px solid var(--bds);
+  font-size:12px;font-weight:600;font-family:var(--font);
+  color:var(--t2);background:var(--surf);cursor:pointer;transition:all .18s}
+.chip:hover{border-color:var(--acc);color:var(--acc);transform:translateY(-1px)}
+.chip.on{background:var(--acc);color:#fff;border-color:var(--acc);
+  box-shadow:0 4px 12px var(--acc-g)}
+
+/* drug list */
+.dlist{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;
+  padding-right:2px;max-height:calc(100vh - 220px)}
+.ditem{background:var(--surf);border:2px solid var(--bd);border-radius:var(--r2);
+  padding:14px 16px;cursor:pointer;transition:all .2s;
+  position:relative;overflow:hidden;flex-shrink:0}
+.ditem::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  border-radius:2px 0 0 2px}
+.ditem.ar::before{background:var(--red)}
+.ditem.ao::before{background:var(--ora)}
+.ditem.ag::before{background:var(--grn)}
+.ditem:hover{border-color:var(--acc);transform:translateX(3px);box-shadow:var(--sh2)}
+.ditem.sel{border-color:var(--acc);background:var(--acc-d);transform:translateX(3px)}
+.ditem.sel::before{background:var(--acc)}
+.di-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.di-name{font-size:15px;font-weight:700;color:var(--t1);line-height:1.2}
+.di-grp{font-size:12px;color:var(--t2);margin-top:2px}
+.di-arr{color:var(--t3);font-size:16px;transition:transform .2s}
+.ditem:hover .di-arr,.ditem.sel .di-arr{transform:translateX(4px);color:var(--acc)}
+.di-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;
+  padding:3px 8px;border-radius:99px;letter-spacing:.3px;white-space:nowrap}
+.br{background:var(--red-d);color:var(--red)}
+.bo{background:var(--ora-d);color:var(--ora)}
+.bg{background:var(--grn-d);color:var(--grn)}
+.bb{background:var(--acc-d);color:var(--acc)}
+
+/* ── RIGHT PANEL (calc + detail) ────────────────────────── */
+.right{display:flex;flex-direction:column;gap:0}
+.empty-state{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;height:100%;min-height:400px;
+  color:var(--t2);text-align:center;gap:12px}
+.es-ico{font-size:64px;opacity:.4}
+.es-txt{font-size:18px;font-weight:600;color:var(--t2)}
+.es-sub{font-size:14px;color:var(--t3)}
+
+/* drug detail card */
+.dcard{background:var(--surf);border-radius:var(--r3);border:1px solid var(--bd);
+  box-shadow:var(--sh2);overflow:hidden;animation:pop .28s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{opacity:0;transform:scale(.97) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+/* hero section */
+.dhero{padding:28px 32px 24px;border-bottom:1px solid var(--bd);
+  background:var(--raise);position:relative;overflow:hidden}
+.dhero::after{content:'';position:absolute;right:-30px;top:-30px;
+  width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle,var(--acc-d),transparent 70%);pointer-events:none}
+.dname{font-size:32px;font-weight:800;color:var(--t1);line-height:1.1;margin-bottom:4px}
+.d-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.dalert{display:flex;align-items:flex-start;gap:10px;
+  padding:12px 16px;border-radius:var(--r1);font-size:13px;
+  line-height:1.55;margin-bottom:0}
+.dalert.r{background:var(--red-d);border-left:4px solid var(--red)}
+.dalert.o{background:var(--ora-d);border-left:4px solid var(--ora)}
+.dalert.g{background:var(--grn-d);border-left:4px solid var(--grn)}
+.dalert-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.dalert-txt{color:var(--t1);font-size:13px;line-height:1.6}
+
+/* calc section */
+.dcalc{padding:24px 32px;border-bottom:1px solid var(--bd)}
+.calc-label{font-size:11px;font-weight:800;color:var(--t2);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}
+
+/* weight row */
+.wrow{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.winp-wrap{display:flex;align-items:center;gap:8px;
+  background:var(--raise);border:2px solid var(--bds);border-radius:var(--r1);
+  padding:10px 16px;flex:1;transition:border-color .2s,box-shadow .2s}
+.winp-wrap:focus-within{border-color:var(--acc);box-shadow:0 0 0 4px var(--acc-g)}
+.winp-wrap input{background:transparent;border:none;outline:none;
+  font-size:24px;font-weight:700;font-family:var(--mono);color:var(--t1);
+  width:100%;text-align:center}
+.winp-wrap input::placeholder{color:var(--t3);font-size:18px;font-weight:400}
+.winp-wrap span{font-size:14px;color:var(--t2);font-weight:600}
+
+/* result grid */
+.rbox{background:linear-gradient(135deg,var(--acc) 0%,#003ccc 100%);
+  border-radius:var(--r2);padding:22px 26px;margin-top:16px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;
+  animation:rp .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 8px 28px var(--acc-g)}
+@keyframes rp{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+[data-theme=dark] .rbox{background:linear-gradient(135deg,#1a4db8 0%,#0a2875 100%)}
+.rcell{padding:0 20px;border-right:1px solid rgba(255,255,255,.15);text-align:center}
+.rcell:first-child{padding-left:0;text-align:left}
+.rcell:last-child{border-right:none;text-align:right}
+.rlbl{font-size:10px;font-weight:700;color:rgba(255,255,255,.6);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.rval{font-size:28px;font-weight:800;color:#fff;font-family:var(--mono);line-height:1}
+.runit{font-size:12px;color:rgba(255,255,255,.65);margin-top:4px}
+.rbox.empty-res{background:var(--raise);box-shadow:none;border:2px dashed var(--bds)}
+.rbox.empty-res .rlbl,.rbox.empty-res .rval,.rbox.empty-res .runit{color:var(--t3)}
+.rbox.empty-res .rval{font-size:22px}
+
+/* dose reference table */
+.dose-sec{padding:24px 32px;border-bottom:1px solid var(--bd)}
+.sec-title{font-size:12px;font-weight:800;color:var(--t2);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;
+  display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+.dose-grid{display:grid;gap:8px}
+.dose-row{background:var(--raise);border-radius:var(--r1);
+  border:1px solid var(--bd);overflow:hidden;transition:border-color .2s}
+.dose-row:hover{border-color:var(--bds)}
+.dr-head{padding:10px 14px;display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid var(--bd);cursor:pointer}
+.dr-indicator{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dr-indication{font-size:13px;font-weight:700;color:var(--t1)}
+.dr-type{font-size:11px;color:var(--t2);margin-left:auto;
+  background:var(--bd);padding:2px 8px;border-radius:99px}
+.dr-body{padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.dr-cell{display:flex;flex-direction:column;gap:3px}
+.dr-clbl{font-size:10px;font-weight:700;color:var(--t2);
+  text-transform:uppercase;letter-spacing:.4px}
+.dr-cval{font-size:14px;font-weight:600;color:var(--t1);font-family:var(--mono)}
+.dr-calc{font-size:13px;font-weight:700;color:var(--acc);
+  font-family:var(--mono);margin-top:4px;
+  padding:4px 8px;background:var(--acc-d);border-radius:6px;
+  display:inline-block;animation:hi .25s ease}
+@keyframes hi{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.dr-calc.warn{color:var(--ora);background:var(--ora-d)}
+
+/* detail accordion */
+.detail-sec{padding:24px 32px}
+.acc{display:flex;flex-direction:column;gap:10px}
+.acc-item{border-radius:var(--r1);border:1px solid var(--bd);overflow:hidden;
+  transition:border-color .2s}
+.acc-item:hover{border-color:var(--bds)}
+.acc-btn{width:100%;padding:13px 16px;display:flex;align-items:center;gap:10px;
+  background:var(--raise);border:none;cursor:pointer;font-family:var(--font);
+  text-align:left;transition:background .2s}
+.acc-btn:hover{background:var(--bd)}
+.acc-ico{width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.acc-ttl{font-size:14px;font-weight:700;color:var(--t1);flex:1}
+.acc-arr{font-size:12px;color:var(--t3);transition:transform .25s}
+.acc-item.open .acc-arr{transform:rotate(180deg)}
+.acc-body{display:none;padding:16px;font-size:14px;line-height:1.7;color:var(--t1)}
+.acc-item.open .acc-body{display:block;animation:fd .2s ease}
+@keyframes fd{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* info table */
+.itbl{width:100%;border-collapse:collapse}
+.itbl td{padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+.itbl tr:last-child td{border-bottom:none}
+.itbl td:first-child{font-size:12px;font-weight:700;color:var(--t2);
+  text-transform:uppercase;letter-spacing:.3px;width:38%;white-space:nowrap}
+.itbl td:last-child{font-size:14px;color:var(--t1);font-family:var(--mono);font-size:13px}
+.pill-list{display:flex;flex-wrap:wrap;gap:5px}
+.pill{padding:3px 10px;border-radius:99px;font-size:12px;
+  background:var(--bd);color:var(--t2);font-family:var(--font);font-weight:500}
+.pill.red{background:var(--red-d);color:var(--red)}
+.pill.ora{background:var(--ora-d);color:var(--ora)}
+.pill.grn{background:var(--grn-d);color:var(--grn)}
+.pill.blue{background:var(--acc-d);color:var(--acc)}
+
+/* no-weight warning */
+.nw{text-align:center;padding:18px;color:var(--t3);font-size:14px;
+  background:var(--raise);border-radius:var(--r1);border:2px dashed var(--bds)}
+
+/* toast */
+.tw{position:fixed;bottom:24px;right:24px;z-index:999;
+  display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:#0d1525;color:#dde6f5;padding:12px 18px;border-radius:var(--r1);
+  font-size:14px;font-weight:500;box-shadow:var(--sh3);
+  animation:tin .3s cubic-bezier(.34,1.56,.64,1);pointer-events:auto;
+  display:flex;align-items:center;gap:8px}
+.toast.out{animation:tout .25s ease forwards}
+@keyframes tin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+@keyframes tout{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(24px)}}
+[data-theme=dark] .toast{background:#1a2540}
+
+/* disclaimer banner */
+.disc{background:var(--ora-d);border:1px solid var(--ora);border-radius:var(--r1);
+  padding:10px 16px;font-size:12px;color:var(--t1);
+  display:flex;gap:8px;align-items:flex-start;margin-bottom:16px;line-height:1.5}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media(max-width:900px){
+  .wrap{grid-template-columns:1fr;padding:14px 12px}
+  .dlist{max-height:280px}
+  .rval{font-size:22px}
+  .rbox{grid-template-columns:1fr 1fr}
+  .rcell:nth-child(3){border-right:none}
+  .dhero{padding:20px 22px 18px}
+  .dname{font-size:26px}
+  .dcalc,.dose-sec,.detail-sec{padding:18px 22px}
+}
+@media(max-width:560px){
+  .hi{padding:10px 14px;flex-wrap:wrap;gap:8px}
+  .logo h1{font-size:16px}
+  .w-bar{order:3;width:100%}
+  .rbox{grid-template-columns:1fr}
+  .rcell{border-right:none;border-bottom:1px solid rgba(255,255,255,.15);
+    padding:12px 0;text-align:left}
+  .rcell:last-child{border-bottom:none}
+}
+</style>
+</head>
+<body>
+<!-- ── HEADER ───────────────────────────────────────────── -->
+<header class="hdr">
+  <div class="hi">
+    <div class="logo">
+      <div class="logo-ring">💊</div>
+      <div>
+        <h1>OR Drug Calculator</h1>
+        <p>สรพ. HA Standard · ห้องผ่าตัด</p>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="w-bar">
+        <label>⚖️ น้ำหนัก</label>
+        <input id="gweight" type="number" placeholder="70.0" min="0.5" max="350" step="0.1"
+          oninput="recalc()">
+        <span>kg</span>
+      </div>
+      <div class="p-toggle">
+        <button class="pt-btn on" id="btn-a" onclick="setPtype('adult')">ผู้ใหญ่</button>
+        <button class="pt-btn" id="btn-p" onclick="setPtype('pedi')">เด็ก</button>
+      </div>
+      <button class="tpill" onclick="toggleTheme()">
+        <div class="tknob"></div>
+        <span class="tico sun">☀️</span>
+        <span class="tico moon">🌙</span>
+      </button>
+      <button class="readme-btn" id="readmeBtn" onclick="toggleReadme()" title="README / คู่มือการใช้งาน">
+        <span class="readme-ico">📖</span>
+        <span class="readme-lbl">README</span>
+        <span class="readme-arr" id="readmeArr">▼</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ── README PANEL ──────────────────────────────────────── -->
+<div class="readme-panel" id="readmePanel">
+  <div class="readme-inner">
+    <div class="readme-grid">
+
+      <div class="rm-section">
+        <div class="rm-head">💊 OR Drug Calculator</div>
+        <div class="rm-body">
+          เครื่องมือคำนวณยาในห้องผ่าตัด มาตรฐาน <strong>สรพ. (HA)</strong> · รองรับยาผู้ใหญ่และเด็ก · ข้อมูลอ้างอิงจาก Miller's Anesthesia, SOBA, ASRA, AHA ACLS และแนวท
+
+<!-- ── BODY ─────────────────────────────────────────────── -->
+<div class="wrap">
+  <!-- LEFT: search + drug list -->
+  <div class="left">
+    <div class="search-box">
+      <span class="sico">🔍</span>
+      <input id="srch" type="text" placeholder="ค้นหายา... Propofol, Ketamine..." oninput="filterDrugs(this.value)">
+      <button class="sclr" id="sclr" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="chips" id="chips">
+      <button class="chip on" onclick="setGrp('all',this)">ทั้งหมด</button>
+      <button class="chip" onclick="setGrp('Induction',this)">🎯 ชักนำ</button>
+      <button class="chip" onclick="setGrp('Muscle Relaxant',this)">💪 NMB</button>
+      <button class="chip" onclick="setGrp('Opioid',this)">💉 Opioid</button>
+      <button class="chip" onclick="setGrp('Local',this)">📍 ยาชา</button>
+      <button class="chip" onclick="setGrp('Sedative',this)">😴 Sedation</button>
+      <button class="chip" onclick="setGrp('Emergency',this)">🚨 Emergency</button>
+      <button class="chip" onclick="setGrp('Reversal',this)">↩️ Reversal</button>
+      <button class="chip" onclick="setGrp('Antiemetic',this)">🌿 PONV</button>
+      <button class="chip" onclick="setGrp('Vasoactive',this)">❤️ Vasoactive</button>
+    </div>
+    <div class="dlist" id="dlist"></div>
+  </div>
+
+  <!-- RIGHT: detail + calc -->
+  <div class="right" id="right">
+    <div class="empty-state">
+      <span class="es-ico">💊</span>
+      <div class="es-txt">เลือกยาจากรายการ</div>
+      <div class="es-sub">กรอกน้ำหนักและเลือกยาเพื่อคำนวณ dose</div>
+    </div>
+  </div>
+</div>
+<div class="tw" id="tw"></div>
+
+<script>
+/* ================================================================
+   DRUG DATABASE — ละเอียดมาก
+================================================================ */
+const DRUGS = [
+// ── INDUCTION AGENTS ──────────────────────────────────────────
+{
+  id:'prop', name:'Propofol', brand:'Diprivan®, Fresofol®',
+  group:'Induction', route:'IV', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL emulsion (200mg/20mL)'},
+  class:'Alkylphenol hypnotic',
+  mechanism:'Potentiates GABA-A receptor → ↑ Cl⁻ influx → CNS depression. Inhibits NMDA receptor, ↓ glutamate release',
+  onset:'15–45 sec IV', duration:'5–10 min (single bolus)', halflife:'t½β 2–24 hr (context-sensitive)',
+  metabolism:'Hepatic conjugation → glucuronide/sulfate. Extra-hepatic clearance (>liver blood flow) → lung metabolism',
+  adult:{
+    induction:  {dose:'1.5–2.5 mg/kg',  mgPerKg:2.0,  max:200, indication:'GA induction'},
+    maintenance:{dose:'4–12 mg/kg/hr',  infusion:true,          indication:'TIVA maintenance'},
+    sedation:   {dose:'0.5–1 mg/kg/hr', infusion:true,          indication:'Procedural sedation/ICU'},
+    eld:        {dose:'1.0–1.5 mg/kg',  mgPerKg:1.2,  max:120,  indication:'Elderly ≥65yr (ลด 30–50%)'},
+  },
+  pedi:{
+    induction:  {dose:'2.5–3.5 mg/kg',  mgPerKg:3.0, max:200,  indication:'GA induction'},
+    maintenance:{dose:'9–15 mg/kg/hr',  infusion:true,           indication:'TIVA maintenance'},
+  },
+  ci:['Egg/soy allergy','Lipid disorders','Propofol infusion syndrome risk (>48hr)'],
+  caution:['ASA III-IV: ลด dose 20–30%','Hemodynamic instability','Elderly: slow injection rate'],
+  sideEffects:['Hypotension (30%)','Apnea','Pain on injection','Propofol infusion syndrome (PIS)','↑ triglycerides (prolonged use)'],
+  antidote:'Supportive care; no specific antidote',
+  notes:'PRIS: metabolic acidosis + arrhythmia + rhabdomyolysis ถ้าใช้ dose สูง >4 mg/kg/hr นาน >48 hr | ฉีดช้า (30 sec) ลด pain on injection | ใช้ Lidocaine 40mg pretreatment ลด pain ได้',
+  refs:'Miller\'s Anesthesia 9th ed; SOBA Guidelines 2023'
+},
+{
+  id:'keta', name:'Ketamine', brand:'Ketalar®, Calypsol®',
+  group:'Induction', route:'IV/IM/PO', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:50,unit:'mg/mL',form:'50 mg/mL (200mg/4mL), 10 mg/mL available'},
+  class:'Phencyclidine derivative — NMDA antagonist',
+  mechanism:'Non-competitive NMDA receptor antagonist → dissociative anesthesia. Preserves airway reflexes & pharyngeal-laryngeal tone. Sympathomimetic: ↑HR, ↑BP, ↑CO via central catecholamine release',
+  onset:'60 sec IV / 3–4 min IM', duration:'10–15 min IV / 20–30 min IM', halflife:'t½ 2–3 hr',
+  metabolism:'Hepatic N-demethylation → norketamine (30% potency) → inactive metabolites',
+  adult:{
+    induction: {dose:'1–2 mg/kg IV',   mgPerKg:1.5, max:200,  indication:'GA induction'},
+    im_ind:    {dose:'4–6 mg/kg IM',   mgPerKg:5.0, max:500,  indication:'IM induction / uncooperative'},
+    analgesic: {dose:'0.1–0.5 mg/kg',  mgPerKg:0.3, max:50,   indication:'Sub-dissociative analgesia'},
+    infusion:  {dose:'0.1–0.5 mg/kg/hr',infusion:true,         indication:'Ketamine infusion analgesia'},
+  },
+  pedi:{
+    induction: {dose:'1–2 mg/kg IV',   mgPerKg:1.5, max:150,  indication:'IV induction'},
+    im_ind:    {dose:'4–8 mg/kg IM',   mgPerKg:6.0, max:400,  indication:'IM induction'},
+    oral_pre:  {dose:'5–6 mg/kg PO',   mgPerKg:5.5, max:200,  indication:'Oral premedication'},
+  },
+  ci:['Ischemic heart disease','Uncontrolled hypertension','Severe psychiatric disorders','Thyrotoxicosis','Pheochromocytoma'],
+  caution:['เพิ่ม ICP/IOP — controversial ใน raised ICP','Emergence delirium (ให้ Midazolam ป้องกัน)','Hypersecretion (ให้ Glycopyrrolate/Atropine ร่วม)'],
+  sideEffects:['Emergence delirium/hallucination (10–30%)','↑BP/HR (20–30%)','Hypersalivation','Nystagmus','Laryngospasm (rare)'],
+  antidote:'Benzodiazepine (Midazolam) สำหรับ emergence reaction',
+  notes:'Ketamine ยังคง airway reflexes → ไม่แนะนำ rapid sequence ถ้าไม่มีประสบการณ์ | ให้ Midazolam 0.03 mg/kg IV ก่อนเสมอเพื่อลด emergence reaction | PONV สูง → pretreat Ondansetron',
+  refs:'Miller\'s Anesthesia 9th ed; ACEP 2020 Procedural Sedation Guidelines'
+},
+{
+  id:'etom', name:'Etomidate', brand:'Hypnomidate®, Amidate®',
+  group:'Induction', route:'IV', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:2,unit:'mg/mL',form:'2 mg/mL (40mg/20mL) in propylene glycol'},
+  class:'Imidazole carboxylate ester',
+  mechanism:'GABA-A agonist (like propofol แต่ selective binding) → minimal cardiovascular depression. ไม่มี sympathomimetic',
+  onset:'15–45 sec', duration:'5–15 min', halflife:'t½ 2.6 hr',
+  metabolism:'Hepatic ester hydrolysis → inactive metabolites (rapid)',
+  adult:{
+    induction:{dose:'0.2–0.3 mg/kg', mgPerKg:0.25, max:30, indication:'GA induction (hemodynamically unstable)'},
+    rsi:      {dose:'0.3 mg/kg',     mgPerKg:0.3,  max:30, indication:'RSI in hemodynamic compromise'},
+  },
+  pedi:{
+    induction:{dose:'0.2–0.3 mg/kg', mgPerKg:0.25, max:25, indication:'GA induction ≥10 yr'},
+  },
+  ci:['Sepsis/septic shock (adrenal suppression)','Adrenal insufficiency','Corticosteroid dependency'],
+  caution:['Adrenal suppression (single dose ↓ cortisol 6–8 hr)','Pain on injection','Myoclonus'],
+  sideEffects:['Myoclonus (30%)','Pain on injection','Adrenal suppression (transient)','PONV','Hiccups'],
+  antidote:'Supportive; no antagonist',
+  notes:'ยาชักนำที่ hemodynamic stable ที่สุด → เหมาะกับ septic shock, cardiac tamponade, trauma | ไม่ควรใช้ซ้ำหรือ infusion (adrenal suppression) | ให้ fentanyl 1-2 mcg/kg ก่อนลด myoclonus',
+  refs:'Annals of Emergency Medicine 2019; Miller\'s 9th ed'
+},
+{
+  id:'thio', name:'Thiopental', brand:'Pentothal®',
+  group:'Induction', route:'IV', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:25,unit:'mg/mL',form:'25 mg/mL (500 mg powder → ทำเป็น 2.5%)'},
+  class:'Barbiturate',
+  mechanism:'GABA-A allosteric modulator → ↑ Cl⁻ conductance, ↓ neuronal excitability. ↓ CMRO2, ICP, IOP',
+  onset:'10–30 sec', duration:'5–10 min', halflife:'t½ 9–12 hr',
+  metabolism:'Hepatic oxidation (slow) → ออก urine',
+  adult:{
+    induction:{dose:'3–5 mg/kg',   mgPerKg:4.0, max:500, indication:'GA induction'},
+    icp:      {dose:'3–5 mg/kg bolus', mgPerKg:4.0, max:500, indication:'ICP reduction / status epilepticus'},
+    icusedate:{dose:'1–5 mg/kg/hr', infusion:true,           indication:'Barbiturate coma (ICU)'},
+  },
+  pedi:{
+    induction:{dose:'5–7 mg/kg', mgPerKg:6.0, max:500, indication:'GA induction'},
+  },
+  ci:['Acute intermittent porphyria (absolute)','Airway obstruction','Severe hepatic failure'],
+  caution:['Extravasation → tissue necrosis (pH 10.8)','Bronchospasm/laryngospasm','Hypotension'],
+  sideEffects:['Hypotension','Bronchospasm','Histamine release','Apnea','Venous irritation'],
+  antidote:'Supportive; no antagonist',
+  notes:'ห้ามใช้ใน Porphyria อย่างเด็ดขาด | Extravasation อันตราย → intraarterial injection → arterial spasm → gangrene | ใช้ Procaine 10ml ฉีดในหลอดเลือดแก้ arterial injection | ปัจจุบันยาขาดตลาดในหลายประเทศ',
+  refs:'Miller\'s 9th ed; Stoelting\'s 5th ed'
+},
+// ── MUSCLE RELAXANTS ─────────────────────────────────────────
+{
+  id:'succ', name:'Succinylcholine', brand:'Anectine®, Quelicin®',
+  group:'Muscle Relaxant', route:'IV/IM', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:20,unit:'mg/mL',form:'20 mg/mL (200mg/10mL) · 50 mg/mL available'},
+  class:'Depolarizing NMB — Bis-quaternary ammonium',
+  mechanism:'Nicotinic ACh receptor agonist → sustained depolarization → fasciculations → paralysis. Resistant to acetylcholinesterase degradation',
+  onset:'45–60 sec IV / 2–3 min IM', duration:'9–12 min', halflife:'Plasma t½ <1 min (pseudocholinesterase)',
+  metabolism:'Plasma pseudocholinesterase (rapid) → succinate + choline',
+  adult:{
+    rsi:    {dose:'1–1.5 mg/kg IV', mgPerKg:1.5, max:200, indication:'RSI intubation'},
+    im:     {dose:'3–4 mg/kg IM',   mgPerKg:3.5, max:400, indication:'IM emergency (laryngospasm)'},
+    laryn:  {dose:'0.5 mg/kg IV',   mgPerKg:0.5, max:100, indication:'Laryngospasm'},
+  },
+  pedi:{
+    rsi:   {dose:'2 mg/kg IV',    mgPerKg:2.0, max:100,  indication:'RSI intubation'},
+    im:    {dose:'4 mg/kg IM',    mgPerKg:4.0, max:150,  indication:'IM emergency'},
+    infant:{dose:'2–3 mg/kg IV',  mgPerKg:2.5, max:100,  indication:'Infant (<1yr)'},
+  },
+  ci:['Hyperkalemia / risk of hyperkalemia','Burns >48hr','Massive trauma','Denervation injury (>48hr)','Malignant hyperthermia susceptibility','Myopathy / muscular dystrophy','Pseudocholinesterase deficiency'],
+  caution:['GERD (full stomach) — adequate dose เท่านั้น','Glaucoma (↑IOP transient)','Hypertension'],
+  sideEffects:['Hyperkalemia (+0.5 mEq/L normal / up to 10+ mEq/L ใน muscle disease)','Malignant hyperthermia trigger','Bradycardia (ใน 2nd dose)','Fasciculations → postop myalgia','↑ IOP/ICP/IGP','Prolonged block (pseudocholinesterase deficiency)'],
+  antidote:'Dantrolene 2.5 mg/kg IV (MH); Supportive; ไม่มี reversal โดยตรง',
+  notes:'HIGH ALERT: ระวัง hyperkalemia ใน burns, massive trauma, UMN/LMN lesion, immobilization >3 วัน | Phase II block ถ้า dose >5 mg/kg | ไม่ควรใช้ใน children เป็น routine (myopathy risk) | เก็บใน -20°C ถ้าไม่ใช้ (unstable ที่ room temp)',
+  refs:'SOBA / ASA Succinylcholine Guidelines 2020; Miller\'s 9th'
+},
+{
+  id:'roc', name:'Rocuronium', brand:'Esmeron®, Zemuron®',
+  group:'Muscle Relaxant', route:'IV', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL (50mg/5mL, 100mg/10mL)'},
+  class:'Non-depolarizing NMB — Aminosteroid',
+  mechanism:'Competitive antagonist at nicotinic ACh receptor (post-synaptic NMJ) → prevents ACh binding → flaccid paralysis. ไม่มี depolarization/fasciculation',
+  onset:'60–90 sec (0.6 mg/kg) / 60 sec (1.2 mg/kg RSI)', duration:'30–60 min', halflife:'t½ 66–80 min',
+  metabolism:'Primarily biliary (50%) → 17-desacetyl-ROC (inactive); renal excretion 30%',
+  adult:{
+    intubation:  {dose:'0.6 mg/kg',    mgPerKg:0.6,  max:80,  indication:'Intubation dose'},
+    rsi:         {dose:'1.2 mg/kg',    mgPerKg:1.2,  max:120, indication:'RSI (สำหรับ modified RSI)'},
+    maintenance: {dose:'0.1–0.15 mg/kg',mgPerKg:0.12, max:15, indication:'Maintenance'},
+    infusion:    {dose:'5–10 mcg/kg/min',infusion:true,         indication:'NMB infusion'},
+  },
+  pedi:{
+    intubation:  {dose:'0.6 mg/kg',    mgPerKg:0.6,  max:60,  indication:'Intubation'},
+    maintenance: {dose:'0.1 mg/kg',    mgPerKg:0.1,  max:10,  indication:'Maintenance'},
+  },
+  ci:['Rocuronium allergy','Sugammadex allergy (ถ้า plan reversal)','Myasthenia gravis (ลด dose 90%)'],
+  caution:['Hepatic failure (↑ duration)','Elderly (↑ duration)','Hypothermia (↑ duration)','Obesity: dose by IBW/LBW'],
+  sideEffects:['Anaphylaxis (1:10,000–1:20,000)','Prolonged block','Recurarization','Histamine release (minimal)'],
+  antidote:'Sugammadex 2–4–16 mg/kg (ตาม depth of block)',
+  notes:'RSI alternative to Succinylcholine: 1.2 mg/kg → intubation condition ≈ Succinylcholine แต่ duration นาน 60–70 min | ต้อง sugammadex 16 mg/kg ready ถ้าใช้ RSI dose | ตรวจสอบ TOF ก่อน reversal เสมอ | Rocuronium stable 2 ปีที่ room temp',
+  refs:'SOBA Guidelines 2022; Anesthesiology 2021'
+},
+{
+  id:'vec', name:'Vecuronium', brand:'Norcuron®',
+  group:'Muscle Relaxant', route:'IV', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:1,unit:'mg/mL',form:'10 mg powder → ทำ 10 mg/10 mL (1 mg/mL)'},
+  class:'Non-depolarizing NMB — Aminosteroid',
+  mechanism:'Competitive nicotinic ACh receptor antagonist. ไม่มี vagolytic effect → hemodynamic stable กว่า Pancuronium',
+  onset:'3–4 min', duration:'25–40 min', halflife:'t½ 65–75 min',
+  metabolism:'Hepatic deacetylation (30–40%) → 3-desacetyl-VEC (50–70% potency); biliary + renal',
+  adult:{
+    intubation:  {dose:'0.08–0.1 mg/kg', mgPerKg:0.1,  max:10, indication:'Intubation'},
+    maintenance: {dose:'0.01–0.015 mg/kg',mgPerKg:0.012,max:2,  indication:'Maintenance q15-20min'},
+    infusion:    {dose:'1–2 mcg/kg/min',  infusion:true,          indication:'NMB infusion'},
+  },
+  pedi:{
+    intubation:  {dose:'0.1 mg/kg', mgPerKg:0.1, max:8,  indication:'Intubation'},
+    maintenance: {dose:'0.05 mg/kg',mgPerKg:0.05,max:5,  indication:'Maintenance'},
+  },
+  ci:['Myasthenia gravis (ลด dose มาก)','Vecuronium allergy'],
+  caution:['Hepatic failure (↑↑ duration)','Renal failure (mild ↑ duration)','Neonates/infant (sensitive)'],
+  sideEffects:['Prolonged block','No histamine release','No cardiovascular effect'],
+  antidote:'Neostigmine 0.04 mg/kg + Atropine / Sugammadex 2–4 mg/kg',
+  notes:'สะสมใน hepatic/renal failure — ระวัง ICU prolonged block | ไม่มี histamine = เหมาะ asthma/cardiac | ต้อง reconstitute ก่อนใช้ (powder) | ใช้ TOF monitoring ทุกครั้ง',
+  refs:'Miller\'s 9th; Stoelting 5th'
+},
+{
+  id:'atr', name:'Atracurium', brand:'Tracrium®',
+  group:'Muscle Relaxant', route:'IV', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL (25mg/2.5mL, 50mg/5mL)'},
+  class:'Non-depolarizing NMB — Benzylisoquinoline',
+  mechanism:'Competitive nicotinic ACh receptor antagonist. Hofmann elimination + ester hydrolysis → ไม่สะสมใน organ failure',
+  onset:'2–3 min', duration:'20–35 min', halflife:'t½ 20 min',
+  metabolism:'Hofmann elimination (spontaneous, pH/temp dependent) + plasma ester hydrolysis → Laudanosine (CNS stimulant, safe ใน clinical dose)',
+  adult:{
+    intubation:  {dose:'0.4–0.5 mg/kg', mgPerKg:0.5, max:60, indication:'Intubation'},
+    maintenance: {dose:'0.1–0.2 mg/kg', mgPerKg:0.15,max:20, indication:'Maintenance q15-20min'},
+    infusion:    {dose:'5–10 mcg/kg/min',infusion:true,        indication:'NMB infusion'},
+  },
+  pedi:{
+    intubation:  {dose:'0.3–0.5 mg/kg', mgPerKg:0.4, max:40, indication:'Intubation'},
+    infant:      {dose:'0.3 mg/kg',      mgPerKg:0.3, max:15, indication:'Infant ≥1 mo'},
+    maintenance: {dose:'0.1–0.15 mg/kg',mgPerKg:0.12,max:12, indication:'Maintenance'},
+  },
+  ci:['Atracurium allergy'],
+  caution:['Histamine release (flush, bronchospasm, hypotension)','Acidosis/hypothermia → ↑ duration (Hofmann affected)','Laudanosine ↑ ใน renal failure (CNS excitation)'],
+  sideEffects:['Histamine release (dose-dependent, >0.5 mg/kg)','Bronchospasm','Hypotension','Skin flushing'],
+  antidote:'Neostigmine + Atropine / Sugammadex',
+  notes:'เหมาะมากใน renal/hepatic failure (Hofmann elimination) | ฉีดช้า 30-60 sec ลด histamine | เก็บ 2-8°C, stable 14 วันที่ room temp | ไม่เหมาะ asthma ถ้า dose สูง',
+  refs:'Miller\'s 9th; BJA 2020'
+},
+{
+  id:'cis', name:'Cisatracurium', brand:'Nimbex®',
+  group:'Muscle Relaxant', route:'IV', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:2,unit:'mg/mL',form:'2 mg/mL (10mg/5mL, 20mg/10mL)'},
+  class:'Non-depolarizing NMB — Benzylisoquinoline (R-cis isomer of atracurium)',
+  mechanism:'Competitive nicotinic ACh antagonist. Hofmann elimination dominant → ไม่ขึ้นกับตับ/ไต. Laudanosine น้อยกว่า Atracurium 5 เท่า',
+  onset:'3–5 min', duration:'40–60 min', halflife:'t½ 22–29 min',
+  metabolism:'Hofmann elimination (77%) → Laudanosine (5× น้อยกว่า Atracurium)',
+  adult:{
+    intubation:  {dose:'0.15–0.2 mg/kg',mgPerKg:0.15,max:20,indication:'Intubation'},
+    maintenance: {dose:'0.03 mg/kg',    mgPerKg:0.03,max:3, indication:'Maintenance q20-25min'},
+    infusion:    {dose:'1–3 mcg/kg/min', infusion:true,       indication:'NMB infusion (ICU)'},
+  },
+  pedi:{
+    intubation:  {dose:'0.1–0.15 mg/kg',mgPerKg:0.12,max:12,indication:'≥2yr'},
+    maintenance: {dose:'0.03 mg/kg',    mgPerKg:0.03,max:3, indication:'Maintenance'},
+  },
+  ci:['Cisatracurium allergy'],
+  caution:['Acidosis/hypothermia → ↓ Hofmann rate → ↑ duration','Severe liver failure (minor effect)'],
+  sideEffects:['Minimal histamine release','Bradycardia (rare)','Bronchospasm (rare)'],
+  antidote:'Neostigmine + Atropine / Sugammadex',
+  notes:'ยาคลายกล้ามเนื้อที่ดีที่สุดสำหรับ ICU / renal failure / hepatic failure | ไม่มี histamine → เหมาะ cardiovascular compromise, asthma | Laudanosine น้อยมาก → ปลอดภัยกว่า Atracurium ใน renal failure',
+  refs:'Critical Care Medicine 2021; Miller\'s 9th'
+},
+// ── OPIOIDS ───────────────────────────────────────────────────
+{
+  id:'fent', name:'Fentanyl', brand:'Sublimaze®, Fentanyl citrate',
+  group:'Opioid', route:'IV/IT/Epidural/TD', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:50,unit:'mcg/mL',form:'50 mcg/mL (0.1mg/2mL, 0.5mg/10mL)'},
+  class:'Phenylpiperidine — μ-opioid agonist',
+  mechanism:'Selective μ-receptor agonist → ↓ substance P, ↑ K⁺ conductance, ↓ Ca²⁺ entry → analgesia, sedation, respiratory depression. Highly lipophilic → rapid CNS penetration',
+  onset:'30–60 sec IV', duration:'30–45 min (single dose)', halflife:'t½ 2–4 hr (context-sensitive t½ ↑ ≫ with infusion)',
+  metabolism:'Hepatic CYP3A4 → norfentanyl (inactive); 80% first-pass ถ้า oral',
+  adult:{
+    induction:   {dose:'1–3 mcg/kg',    mgPerKg:2.0, max:200,  indication:'Induction adjunct / analgesia'},
+    maintenance: {dose:'1–2 mcg/kg/hr', infusion:true,          indication:'Intraop infusion'},
+    sedation:    {dose:'0.5–1 mcg/kg',  mgPerKg:0.75,max:100,  indication:'Procedural sedation'},
+    epidural:    {dose:'50–100 mcg',     fix:true,               indication:'Epidural bolus (+ local)'},
+    intrathecal: {dose:'10–25 mcg',      fix:true,               indication:'Spinal adjuvant'},
+  },
+  pedi:{
+    induction:   {dose:'1–2 mcg/kg',    mgPerKg:1.5, max:100,  indication:'Induction adjunct'},
+    maintenance: {dose:'0.5–1 mcg/kg/hr',infusion:true,         indication:'Intraop infusion'},
+    neonatal:    {dose:'0.5–1 mcg/kg',  mgPerKg:0.5, max:25,   indication:'Neonatal (cautious)'},
+  },
+  ci:['Respiratory depression (unmonitored)','MAO inhibitor use <14 days','Raised ICP (relative)'],
+  caution:['Chest wall rigidity (>5 mcg/kg rapid IV)','Context-sensitive t½ ↑ with prolonged infusion','Hepatic failure: ↑ t½','Obesity: dose by LBW'],
+  sideEffects:['Respiratory depression','Chest wall rigidity','Bradycardia','Nausea/vomiting (PONV)','Pruritus','Urinary retention','Constipation'],
+  antidote:'Naloxone 0.04–0.4 mg IV (titrate ทีละ 0.04 mg; ระวัง acute withdrawal, pulm edema)',
+  notes:'CONTROLLED DRUG — ต้องบันทึกทุก ampoule | Chest wall rigidity: ฉีดช้า หรือ NMB ก่อน | Context-sensitive t½: infusion 2hr → t½ ~30min; 8hr → t½ ~3hr | IT fentanyl ออกฤทธิ์เร็ว 15 min, ระวัง delay respiratory depression (4–8 hr)',
+  refs:'Thai FDA Narcotic Control; Miller\'s 9th; ASRA 2023'
+},
+{
+  id:'suf', name:'Sufentanil', brand:'Sufenta®',
+  group:'Opioid', route:'IV/IT/Epidural', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:5,unit:'mcg/mL',form:'5 mcg/mL (50mcg/10mL, 250mcg/50mL)'},
+  class:'Phenylpiperidine — μ-opioid agonist (potency 5–10× fentanyl)',
+  mechanism:'μ-opioid agonist, กดระบบ sympathetic ต่ำกว่า morphine, highly lipophilic (10× fentanyl), สะสมใน adipose น้อยกว่า fentanyl',
+  onset:'1–3 min', duration:'20–45 min (short infusion)', halflife:'t½ 2.7 hr',
+  metabolism:'CYP3A4 → desmethyl, N-phenethyl-norsufentanil (inactive)',
+  adult:{
+    induction:   {dose:'0.25–1 mcg/kg', mgPerKg:0.5,  max:50,  indication:'Induction adjunct'},
+    maintenance: {dose:'0.25–0.5 mcg/kg/hr',infusion:true,      indication:'TIVA adjunct'},
+    epidural:    {dose:'10–15 mcg',       fix:true,              indication:'Epidural bolus'},
+    intrathecal: {dose:'2.5–5 mcg',       fix:true,              indication:'Spinal adjuvant'},
+  },
+  pedi:{
+    induction:   {dose:'0.1–0.3 mcg/kg', mgPerKg:0.2, max:30,  indication:'Induction adjunct'},
+    cardiac_ped: {dose:'5–20 mcg/kg',    mgPerKg:10,  max:500,  indication:'Cardiac anesthesia'},
+  },
+  ci:['MAO inhibitors','Respiratory depression'],
+  caution:['Potency 5–10× fentanyl → dose error risk','Bradycardia','Chest wall rigidity'],
+  sideEffects:['Respiratory depression','Bradycardia','Chest wall rigidity','PONV','Pruritus'],
+  antidote:'Naloxone (dose ตาม potency: naloxone dose เท่าเดิม)',
+  notes:'CONTROLLED DRUG | Potency 5–10× fentanyl → คำนวณ dose ระวัง | เหมาะสำหรับ cardiac, pediatric cardiac surgery (high-dose narcotic technique) | Intrathecal 2.5–5 mcg → onset 5 min, duration 4–6 hr',
+  refs:'Miller\'s 9th; Cardiac Anesthesia 2020'
+},
+{
+  id:'rem', name:'Remifentanil', brand:'Ultiva®',
+  group:'Opioid', route:'IV Infusion', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:50,unit:'mcg/mL',form:'ทำ dilution: 1 mg + 49 mL saline = 20 mcg/mL'},
+  class:'Piperidine — ultra-short μ-opioid agonist (ester linkage)',
+  mechanism:'μ-opioid agonist with unique ester bond → hydrolysis by non-specific plasma & tissue esterases → rapid, predictable, context-insensitive offset. Context-sensitive t½ = 3–5 min regardless of infusion duration',
+  onset:'1 min', duration:'5–10 min (จาก stop infusion)', halflife:'t½ 3–10 min (infusion-independent)',
+  metabolism:'Non-specific esterases (blood, tissue) → GI-90717 (inactive); CYP NOT involved',
+  adult:{
+    induction:   {dose:'0.5–1 mcg/kg/min',  infusion:true, indication:'Induction phase (with propofol)'},
+    maintenance: {dose:'0.05–2 mcg/kg/min', infusion:true, indication:'Maintenance (titrate)'},
+    sedation:    {dose:'0.025–0.1 mcg/kg/min',infusion:true,indication:'Sedation (endoscopy/cath lab)'},
+    intubation:  {dose:'1 mcg/kg bolus',    mgPerKg:1.0, max:150, indication:'Attenuate intubation response'},
+  },
+  pedi:{
+    maintenance: {dose:'0.05–1 mcg/kg/min', infusion:true, indication:'TIVA maintenance ≥2yr'},
+    neonatal:    {dose:'0.05–0.5 mcg/kg/min',infusion:true, indication:'Neonatal infusion'},
+  },
+  ci:['Bolus IM/SC (ไม่ดูดซึม)','Intrathecal/epidural (glycine preservative → neurotoxic)'],
+  caution:['Acute opioid tolerance (ใช้ นาน → post-op hyperalgesia)','หยุดก่อน closure 5–10 min (transition analgesia)','Respiratory depression ถ้า under-ventilated','Bradycardia/hypotension'],
+  sideEffects:['Acute opioid tolerance / hyperalgesia','Bradycardia','Muscle rigidity','Respiratory depression','PONV'],
+  antidote:'Naloxone; แต่ offset เร็วมากอยู่แล้ว',
+  notes:'INFUSION ONLY — ห้าม bolus IM/SC | Context-sensitive t½ = 3–5 min ทุก infusion duration → หยุดแล้วออกฤทธิ์หายเร็ว | Transition analgesia ก่อน end surgery: morphine 0.1 mg/kg หรือ ketorolac | ระวัง post-op hyperalgesia → combine ketamine 0.2–0.5 mg/kg | เก็บ 2–8°C ก่อน reconstitute',
+  refs:'Miller\'s 9th; BJA 2023 Remifentanil Tolerance'
+},
+{
+  id:'morph', name:'Morphine', brand:'Morphine Sulfate',
+  group:'Opioid', route:'IV/IM/SC/IT/Epidural/PO', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL (10mg/1mL, 50mg/5mL)'},
+  class:'Phenanthrene — natural opioid agonist',
+  mechanism:'μ>κ>δ opioid receptor agonist. Morphine-6-glucuronide (M6G) active metabolite (higher CNS penetration delayed). Histamine release (direct mast cell)',
+  onset:'5–10 min IV', duration:'3–5 hr', halflife:'t½ 2–3 hr (M6G t½ 9 hr)',
+  metabolism:'Hepatic glucuronidation → M6G (active, 50×), M3G (inactive, antagonist-like) → renal excretion → สะสมใน renal failure',
+  adult:{
+    analgesia:  {dose:'0.05–0.1 mg/kg IV', mgPerKg:0.1, max:10, indication:'IV analgesic bolus'},
+    pca:        {dose:'1–2 mg/bolus; lockout 5–10 min', fix:true, indication:'PCA bolus'},
+    epidural:   {dose:'2–5 mg',            fix:true,              indication:'Epidural (low concentration)'},
+    intrathecal:{dose:'0.1–0.3 mg',        fix:true,              indication:'Spinal — delayed onset analgesia'},
+  },
+  pedi:{
+    analgesia:  {dose:'0.05–0.1 mg/kg', mgPerKg:0.08, max:5,  indication:'IV analgesic'},
+    infusion:   {dose:'10–40 mcg/kg/hr',infusion:true,          indication:'PCA/NCA infusion'},
+  },
+  ci:['Renal failure (M6G accumulation)','Respiratory depression','MAO inhibitors'],
+  caution:['Histamine release → bronchospasm, hypotension','Biliary colic (↑ Sphincter of Oddi pressure)','Raised ICP (↑ PaCO2 risk)','Elderly: sensitive'],
+  sideEffects:['Histamine release','Respiratory depression (delayed ใน IT/epidural)','PONV (30–40%)','Pruritus (IT/epidural สูง)','Urinary retention','Constipation'],
+  antidote:'Naloxone 0.04–0.4 mg IV; ระวัง M6G → delayed re-narcotization',
+  notes:'CONTROLLED DRUG | IT morphine → delayed respiratory depression 6–24 hr → monitor ≥24 hr | M6G สะสมใน renal failure → ใช้ oxycodone หรือ hydromorphone แทน | Histamine: ฉีดช้า หรือ ใช้ hydromorphone แทน | PCA: basal rate ไม่แนะนำใน opioid-naïve',
+  refs:'Thai FDA; Miller\'s 9th; ASRA Regional Analgesia 2023'
+},
+// ── LOCAL ANESTHETICS ─────────────────────────────────────────
+{
+  id:'bupi', name:'Bupivacaine', brand:'Marcaine®, Sensorcaine®',
+  group:'Local', route:'Spinal/Epidural/Nerve block/Infiltration', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:5,unit:'mg/mL',form:'0.5% = 5 mg/mL; 0.25%; 0.75% (hyperbaric spinal); 0.125%'},
+  class:'Amino-amide LA — long-acting',
+  mechanism:'Na⁺ channel blocker (voltage-gated) → ↓ nerve conduction → sensory & motor block. Lipophilic → binds cardiac Na⁺ channel → cardiotoxicity risk',
+  onset:'10–20 min nerve block / 2–3 min spinal', duration:'3–8 hr epidural / 2–3 hr spinal', halflife:'t½ 2.7 hr (plasma)',
+  metabolism:'Hepatic CYP1A2, CYP3A4 → desbutyl, PPX (active); renal excretion',
+  adult:{
+    spinal_0_5: {dose:'10–20 mg (0.5% hyperbaric)', fix:true, indication:'Spinal (0.5% hyperbaric)'},
+    epidural:   {dose:'0.25–0.5% ; 15–30 mL total', fix:true, indication:'Epidural bolus'},
+    nerve_block:{dose:'2 mg/kg max (without epi)',   mgPerKg:2.0, max:175, indication:'Peripheral nerve block'},
+    with_epi:   {dose:'3 mg/kg max (with epi)',      mgPerKg:3.0, max:225, indication:'Infiltration + epinephrine'},
+    infusion:   {dose:'0.1% @ 5–15 mL/hr',          fix:true,             indication:'Epidural infusion'},
+  },
+  pedi:{
+    caudal:      {dose:'0.5–1 mL/kg (0.25%)',  mgPerKg:2.5, max:50, indication:'Caudal block'},
+    nerve_block: {dose:'1.5–2 mg/kg max',       mgPerKg:1.75,max:100,indication:'Peripheral nerve block'},
+    epidural_inf:{dose:'0.2–0.4 mg/kg/hr infusion',infusion:true,    indication:'Epidural infusion'},
+  },
+  ci:['IV bolus (absolute — LAST)','Intravenous regional anesthesia (IVRA — Bier block)'],
+  caution:['LAST: Lipid rescue Intralipid 20% 1.5 mL/kg bolus','Hepatic failure: ↑ plasma levels','Elderly: ↓ protein binding → ↑ free drug'],
+  sideEffects:['LAST: cardiac arrest (refractory VF)','Hypotension','Urinary retention','Prolonged block','Cauda equina syndrome (concentrated intrathecal)'],
+  antidote:'Intralipid 20%: 1.5 mL/kg bolus → 0.25 mL/kg/min infusion (LAST protocol)',
+  notes:'MAX DOSE สำคัญมาก — ไม่เกิน 2 mg/kg (175 mg) without epi, 3 mg/kg (225 mg) with epi | LAST: บรรทัดแรกคือ Intralipid 20% + CPR | 0.75% spinal เฉพาะ hyperbaric (ไม่ใช้ epidural — cardiotoxic) | ฉีด epidural ให้ test dose 3 mL (1.5% lidocaine + epi 1:200,000) ก่อนเสมอ',
+  refs:'ASRA LAST Guidelines 2023; Miller\'s 9th'
+},
+{
+  id:'ropi', name:'Ropivacaine', brand:'Naropin®',
+  group:'Local', route:'Epidural/Spinal/Nerve block/Infiltration', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:7.5,unit:'mg/mL',form:'0.2% (2mg/mL), 0.5% (5mg/mL), 0.75% (7.5mg/mL), 1.0% (10mg/mL)'},
+  class:'Amino-amide LA — pure S(-)-enantiomer',
+  mechanism:'Na⁺ channel blocker — S-enantiomer only → lower cardiac toxicity vs bupivacaine (less lipophilic → shorter cardiac Na⁺ channel binding). Differential block: sensory > motor ที่ low concentration',
+  onset:'10–25 min nerve block', duration:'4–8 hr nerve block / 2–6 hr epidural', halflife:'t½ 4.2 hr',
+  metabolism:'Hepatic CYP1A2 → 3-hydroxy-ropivacaine (active); PPX',
+  adult:{
+    epidural:   {dose:'0.5–0.75% ; 15–20 mL',  fix:true, indication:'Epidural induction'},
+    labor_epi:  {dose:'0.1–0.2% @ 5–15 mL/hr', fix:true, indication:'Labor epidural infusion'},
+    nerve_block:{dose:'2–3 mg/kg max',          mgPerKg:2.5, max:250, indication:'Peripheral nerve block'},
+    infiltration:{dose:'2 mg/kg',               mgPerKg:2.0, max:200, indication:'Wound infiltration'},
+    nerve_inf:  {dose:'0.2% @ 5–10 mL/hr',     fix:true,             indication:'Perineural catheter infusion'},
+  },
+  pedi:{
+    caudal:     {dose:'2 mg/kg (0.25%)',  mgPerKg:2.0, max:100, indication:'Caudal block ≥1yr'},
+    epidural:   {dose:'0.2–0.5 mg/kg/hr',infusion:true,          indication:'Epidural infusion'},
+  },
+  ci:['IVRA','IV bolus'],
+  caution:['LAST possible (lower risk than bupivacaine แต่ยังเป็นไปได้)','Hepatic failure'],
+  sideEffects:['Hypotension','LAST (lower risk)','Motor block (ต่ำกว่า bupivacaine)','Urinary retention'],
+  antidote:'Intralipid 20% (LAST protocol)',
+  notes:'Cardiotoxicity ต่ำกว่า Bupivacaine 25–30% → preferred for high-volume blocks | Motor-sparing ที่ 0.1–0.2% → เหมาะ labor epidural | Max dose nerve block = 3 mg/kg (150–250 mg) | 0.2% เหมาะสำหรับ continuous perineural catheter',
+  refs:'ASRA 2023; ESRA Guidelines 2022'
+},
+{
+  id:'lido', name:'Lidocaine', brand:'Xylocaine®, Lignocaine®',
+  group:'Local', route:'IV/Topical/Infiltration/Epidural/Spinal', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:20,unit:'mg/mL',form:'0.5%, 1% (10mg/mL), 2% (20mg/mL), 4% (topical), 5% (spinal hyperbaric)'},
+  class:'Amino-amide LA — short/intermediate acting',
+  mechanism:'Na⁺ channel blocker. IV systemic: anti-hyperalgesic, anti-inflammatory (K⁺ channel, NMDA), antiarrhythmic (Vaughan-Williams Ib)',
+  onset:'2–5 min infiltration / 2–5 min epidural / 2–3 min spinal', duration:'1–2 hr epidural / 45–75 min spinal', halflife:'t½ 1.5–2 hr',
+  metabolism:'Hepatic CYP3A4, CYP1A2 → MEGX (active, 50% potency), GX; first-pass extensive',
+  adult:{
+    infiltration:{dose:'3 mg/kg (7 mg/kg with epi)', mgPerKg:3.0, max:300, indication:'Infiltration without epi'},
+    with_epi:    {dose:'7 mg/kg with epi',           mgPerKg:7.0, max:500, indication:'Infiltration with 1:200,000 epi'},
+    spinal:      {dose:'40–100 mg (5% hyperbaric)',   fix:true,             indication:'Spinal (short/day surgery)'},
+    epidural:    {dose:'1.5–2% ; 15–20 mL',          fix:true,             indication:'Epidural induction'},
+    iv_infusion: {dose:'1.5 mg/kg bolus → 1.5–3 mg/kg/hr',mgPerKg:1.5,max:150,indication:'IV lidocaine analgesia'},
+    topical:     {dose:'4% spray; 200 mg max',        fix:true,             indication:'Airway topicalization'},
+    antiarrhyth: {dose:'1–1.5 mg/kg IV bolus',        mgPerKg:1.5, max:100, indication:'VT/VF (ACLS)'},
+  },
+  pedi:{
+    infiltration:{dose:'4–5 mg/kg max', mgPerKg:4.5, max:200, indication:'Infiltration'},
+    caudal:      {dose:'0.5–1% ; 0.5–1 mL/kg',mgPerKg:5.0, max:200, indication:'Caudal'},
+  },
+  ci:['Adams-Stokes syndrome','WPW with AF (antiarrhythmic use)'],
+  caution:['CNS toxicity: tinnitus, metallic taste, convulsion (at 5–10× plasma level)','IV lidocaine: hepatic failure → ↑ MEGX','TNS (Transient Neurological Symptoms): spinal lidocaine อาจเจ็บ back/legs'],
+  sideEffects:['CNS toxicity (tinnitus → convulsion → coma)','Cardiovascular toxicity','TNS (spinal route)','Methemoglobinemia (topical overdose)'],
+  antidote:'Intralipid 20% (LAST); Benzodiazepines (seizures); Methylene blue (MetHb)',
+  notes:'TNS risk ใน knee arthroscopy position + 5% hyperbaric lidocaine → ใช้ isobaric 2% แทนได้ | IV lidocaine infusion ลด opioid requirement 20–30% และ ileus | Airway topicalization: มีขีดจำกัด systemic absorption → ไม่เกิน 3–4 mg/kg sprayed | EMLA cream = 2.5% lidocaine + 2.5% prilocaine',
+  refs:'ASRA 2023; Cochrane Review IV Lidocaine 2021'
+},
+// ── SEDATIVES ─────────────────────────────────────────────────
+{
+  id:'mid', name:'Midazolam', brand:'Dormicum®, Versed®',
+  group:'Sedative', route:'IV/IM/PO/Intranasal', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL (15mg/3mL, 50mg/10mL); 1 mg/mL syrup'},
+  class:'Benzodiazepine (water-soluble, short-acting)',
+  mechanism:'GABA-A receptor positive allosteric modulator → ↑ frequency of Cl⁻ channel opening → anxiolysis, sedation, amnesia, anticonvulsant. Imidazole ring → water-soluble at pH <4, lipid-soluble at pH 7.4',
+  onset:'2–3 min IV / 10–20 min IM', duration:'30–90 min IV', halflife:'t½ 1.5–2.5 hr',
+  metabolism:'Hepatic CYP3A4 → 1-OH-midazolam (active, 50% potency) → glucuronide; renal excretion',
+  adult:{
+    premedication:{dose:'0.02–0.05 mg/kg IV',   mgPerKg:0.03, max:5,  indication:'IV premedication'},
+    im_premed:    {dose:'0.05–0.08 mg/kg IM',    mgPerKg:0.06, max:8,  indication:'IM premedication'},
+    sedation:     {dose:'0.5–2 mg IV titrate',   fix:true,              indication:'Procedural sedation (titrate slowly)'},
+    induction:    {dose:'0.15–0.3 mg/kg IV',     mgPerKg:0.2,  max:20, indication:'Induction (+ opioid)'},
+    icu:          {dose:'0.02–0.1 mg/kg/hr',     infusion:true,          indication:'ICU sedation infusion'},
+    seizure:      {dose:'0.1 mg/kg IV (max 10mg)',mgPerKg:0.1,  max:10, indication:'Status epilepticus'},
+  },
+  pedi:{
+    oral_premed:  {dose:'0.3–0.5 mg/kg PO',      mgPerKg:0.4,  max:15, indication:'Oral premedication 30 min prior'},
+    intranasal:   {dose:'0.2–0.3 mg/kg IN',       mgPerKg:0.25, max:5,  indication:'Intranasal (atomizer, <3yr)'},
+    iv_premed:    {dose:'0.05–0.1 mg/kg IV',      mgPerKg:0.06, max:5,  indication:'IV (induction room)'},
+    seizure:      {dose:'0.1–0.3 mg/kg IV/IM',    mgPerKg:0.15, max:5,  indication:'Status epilepticus'},
+  },
+  ci:['Acute narrow-angle glaucoma','Alcohol/drug abuse (relative)'],
+  caution:['Elderly: ↓ dose 50% (prolonged sedation, paradoxical excitation)','Hepatic failure: ↑ t½','Obesity: dose by LBW','Paradoxical excitation (3–10%)'],
+  sideEffects:['Respiratory depression (+ opioid)','Anterograde amnesia','Paradoxical agitation','Hiccups','Phlebitis (IV)'],
+  antidote:'Flumazenil 0.2 mg IV q1min (max 1 mg); t½ สั้น → re-sedation อาจเกิด',
+  notes:'CONTROLLED DRUG | Anterograde amnesia excellent → เหมาะ premedication | ไม่มี analgesic effect | Oral PO ดูดซึมดีในเด็ก → route of choice สำหรับ uncooperative child | Intranasal: onset 5–10 min, volume <0.5 mL/nostril | ระวังผสมกับ opioid → synergistic respiratory depression',
+  refs:'Thai FDA; AAP Sedation Guidelines 2019'
+},
+{
+  id:'dex', name:'Dexmedetomidine', brand:'Precedex®, Dexdor®',
+  group:'Sedative', route:'IV Infusion', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:4,unit:'mcg/mL',form:'200 mcg/2 mL → dilute to 4 mcg/mL (200mcg + 48mL saline)'},
+  class:'Alpha-2 adrenoceptor agonist (highly selective: α2:α1 = 1600:1)',
+  mechanism:'α₂-receptor agonist in locus coeruleus → ↓ norepinephrine → sedation resembling natural sleep (arousable). Analgesic sparing (dorsal horn α₂). ↓ MAC 30–50%. Sympatholytic: ↓ HR, ↓ BP',
+  onset:'Loading 10–20 min / infusion 5–10 min', duration:'Stop → offset 20–30 min', halflife:'t½ 2 hr',
+  metabolism:'Hepatic N-methylation, glucuronidation → inactive; renal excretion',
+  adult:{
+    loading:  {dose:'0.5–1 mcg/kg over 10–20 min', mgPerKg:1.0, max:100, indication:'Loading dose (awake fiber-optic)'},
+    sedation: {dose:'0.2–0.7 mcg/kg/hr',            infusion:true,         indication:'ICU/procedural sedation'},
+    mac:      {dose:'0.4–0.7 mcg/kg/hr',            infusion:true,         indication:'MAC/monitored sedation (OR)'},
+    awake_fob:{dose:'0.5–1 mcg/kg loading → 0.5–0.7 mcg/kg/hr', fix:true,  indication:'Awake fiberoptic intubation'},
+  },
+  pedi:{
+    loading:  {dose:'0.5–1 mcg/kg over 10 min', mgPerKg:0.5, max:50, indication:'Loading'},
+    sedation: {dose:'0.2–0.5 mcg/kg/hr',         infusion:true,        indication:'ICU/procedural sedation ≥1mo'},
+  },
+  ci:['Advanced heart block (2nd/3rd degree)','Sick sinus syndrome'],
+  caution:['Bradycardia (loading dose especially)','Hypotension (↓ volume depleted)','Hypertension (paradoxical, loading)','Elderly: start at lower dose'],
+  sideEffects:['Bradycardia (20–30%)','Hypotension','Transient hypertension (loading)','Dry mouth','Nausea'],
+  antidote:'Atropine (bradycardia); Vasopressor (hypotension); no specific antagonist',
+  notes:'ไม่มี respiratory depression → safe ใน spontaneously breathing patients | Awake fiberoptic: gold standard adjunct | ↓ emergence agitation ใน pediatric (0.5 mcg/kg at end of surgery) | MAC sparing 30–50% | Paradoxical HTN ถ้า load เร็วเกิน (↓ rate หรือ skip loading)',
+  refs:'Anesthesiology 2022; Critical Care Medicine 2022; IARS 2023'
+},
+// ── EMERGENCY DRUGS ───────────────────────────────────────────
+{
+  id:'epi', name:'Epinephrine', brand:'Adrenaline®, EpiPen®',
+  group:'Emergency', route:'IV/IM/ET/IO', alertLevel:'red', alert:'EMERGENCY',
+  concentration:{value:0.1,unit:'mg/mL',form:'1:10,000 = 0.1 mg/mL (1mg/10mL) for IV | 1:1000 = 1 mg/mL for IM anaphylaxis'},
+  class:'Endogenous catecholamine — α & β agonist',
+  mechanism:'α₁: vasoconstriction (↑ SVR, ↑ CPP during CPR) | β₁: ↑HR, ↑contractility | β₂: bronchodilation, vasodilation (muscle) | β₂: mast cell ↓ histamine (anaphylaxis)',
+  onset:'Immediate IV', duration:'3–5 min', halflife:'t½ 2 min',
+  metabolism:'MAO + COMT in liver, kidney → metanephrine, VMA; rapid plasma inactivation',
+  adult:{
+    cpr:        {dose:'1 mg IV/IO q3–5 min', fix:true,              indication:'ACLS — CPR (VF/PEA/asystole)'},
+    anaphylaxis:{dose:'0.3–0.5 mg IM lateral thigh', fix:true,       indication:'Anaphylaxis (1:1000 IM)'},
+    infusion:   {dose:'0.01–1 mcg/kg/min',   infusion:true,          indication:'Vasopressor infusion'},
+    bronchospasm:{dose:'0.3 mg IM',           fix:true,               indication:'Severe bronchospasm'},
+    local_hemo: {dose:'1:200,000–1:400,000 with LA', fix:true,        indication:'Hemostasis with LA'},
+  },
+  pedi:{
+    cpr:        {dose:'0.01 mg/kg IV/IO', mgPerKg:0.01, max:1.0,  indication:'PALS — CPR'},
+    anaphylaxis:{dose:'0.01 mg/kg IM (max 0.5mg)', mgPerKg:0.01, max:0.5, indication:'Anaphylaxis IM'},
+    croup:      {dose:'0.5 mL/kg racemic epi neb', fix:true,       indication:'Croup (racemic epinephrine)'},
+    infusion:   {dose:'0.05–1 mcg/kg/min', infusion:true,          indication:'Vasopressor infusion'},
+  },
+  ci:['Hypertrophic obstructive cardiomyopathy (vasopressor use)','ไม่มี CI ในภาวะ cardiac arrest'],
+  caution:['Avoid local epi on fingers/toes/nose (ischemia)','Severe hypertension','Dysrhythmias','MAOI use'],
+  sideEffects:['Hypertension','Tachycardia','Dysrhythmias','Ischemia (myocardial)','Pulmonary edema'],
+  antidote:'Alpha-blocker (phentolamine) for hypertensive crisis; Beta-blocker PRN',
+  notes:'ACLS: ให้ทุก 3–5 min ไม่มีจำกัด dose ระหว่าง CPR | Anaphylaxis: IM > IV (ให้ IV เฉพาะ refractory + ใน ICU setting) | Dilution: 1 mg in 9 mL NS = 1:10,000 (0.1 mg/mL) สำหรับ IV | Infusion: 2–10 mcg/min (ผู้ใหญ่) หรือ 0.1–1 mcg/kg/min',
+  refs:'AHA ACLS 2020; WAO Anaphylaxis Guidelines 2020'
+},
+{
+  id:'atro', name:'Atropine', brand:'Atropine sulfate',
+  group:'Emergency', route:'IV/IM/ET/IO', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:0.5,unit:'mg/mL',form:'0.5 mg/mL (0.5mg/1mL, 1mg/2mL)'},
+  class:'Antimuscarinic — competitive muscarinic ACh antagonist',
+  mechanism:'Competitive M2 receptor antagonist → blocks vagal tone → ↑HR | M3 → ↓ secretions, bronchodilation, ↓ GI motility | CNS: anticholinergic effects',
+  onset:'1–2 min IV', duration:'30–60 min', halflife:'t½ 2–3 hr',
+  metabolism:'Hepatic + renal; partial hydrolysis',
+  adult:{
+    bradycardia:{dose:'0.5–1 mg IV q3–5 min (max 3 mg)', mgPerKg:0.02, max:3.0, indication:'ACLS bradycardia'},
+    premedication:{dose:'0.02 mg/kg IV/IM',              mgPerKg:0.02, max:0.6, indication:'Premedication (antisialagogue)'},
+    reversal:    {dose:'0.02 mg/kg with Neostigmine',     mgPerKg:0.02, max:1.5, indication:'NMB reversal (+ neostigmine)'},
+    organophosphate:{dose:'2–4 mg IV q5–10 min until dry', fix:true,             indication:'Organophosphate poisoning'},
+  },
+  pedi:{
+    bradycardia: {dose:'0.02 mg/kg IV min 0.1 mg', mgPerKg:0.02, max:0.5, indication:'PALS bradycardia (min 0.1mg)'},
+    premedication:{dose:'0.02 mg/kg IM',            mgPerKg:0.02, max:0.4, indication:'IM premedication'},
+    reversal:    {dose:'0.02 mg/kg with Neostigmine',mgPerKg:0.02, max:1.0, indication:'NMB reversal'},
+  },
+  ci:['Glaucoma (narrow-angle)','Tachycardia (relative)','Urinary retention (BPH)'],
+  caution:['Min pediatric dose = 0.1 mg → paradoxical bradycardia ถ้า dose ต่ำเกินไป','Hyperthermia (↓ sweating)','Elderly: delirium (anticholinergic)'],
+  sideEffects:['Tachycardia','Dry mouth','Blurred vision','Urinary retention','Confusion (elderly)','Hyperthermia'],
+  antidote:'Physostigmine (anticholinergic toxicity)',
+  notes:'Minimum pediatric dose = 0.1 mg ห้ามต่ำกว่านี้ (paradoxical bradycardia จาก central vagal stimulation) | ใน ACLS bradycardia: max total 3 mg | Glycopyrrolate 0.01 mg/kg แทนได้ (less CNS, less tachycardia) | Reversal: ratio Atropine:Neostigmine = 1:5 (mg:mg)',
+  refs:'AHA ACLS 2020; PALS 2020'
+},
+{
+  id:'eph', name:'Ephedrine', brand:'Ephedrine hydrochloride',
+  group:'Vasoactive', route:'IV/IM', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:50,unit:'mg/mL',form:'50 mg/mL → dilute: 50 mg + 9 mL NS = 5 mg/mL'},
+  class:'Indirect sympathomimetic — α & β agonist + NE release',
+  mechanism:'Indirect: displaces NE from presynaptic vesicles | Direct α & β agonist activity | ↑ HR, ↑ BP, bronchodilation | Crosses BBB → mild CNS stimulation',
+  onset:'1 min IV', duration:'10–15 min IV', halflife:'t½ 3–6 hr',
+  metabolism:'Partial hepatic deamination; mainly renal excretion unchanged',
+  adult:{
+    spinal_htn: {dose:'5–10 mg IV bolus (titrate)',  fix:true,              indication:'Spinal-induced hypotension'},
+    prophylaxis:{dose:'0.1 mg/kg IM before spinal',  mgPerKg:0.1, max:25,  indication:'Prophylaxis spinal htn'},
+    bronchospasm:{dose:'25–50 mg IM',                fix:true,              indication:'Bronchospasm (mild-moderate)'},
+  },
+  pedi:{
+    hypotension:{dose:'0.1–0.2 mg/kg IV', mgPerKg:0.15, max:10, indication:'Hypotension'},
+  },
+  ci:['MAO inhibitors (hypertensive crisis)','Thyrotoxicosis','Severe hypertension'],
+  caution:['Tachycardia (β1 effect)','Tachyphylaxis (repeat dosing → depletion NE stores)','Obstetric: ↑ fetal heart rate vs phenylephrine'],
+  sideEffects:['Tachycardia','Hypertension','Insomnia','Arrhythmias','Tremor'],
+  antidote:'Alpha/beta blockers PRN',
+  notes:'ยาแก้ spinal hypotension แบบดั้งเดิม → ปัจจุบัน Phenylephrine preferred ใน obstetric (น้อย fetal tachycardia) | Tachyphylaxis เกิดเร็ว → ไม่เหมาะ infusion นาน | ผสมก่อนใช้: 50 mg + 9 mL saline = 5 mg/mL (10 mL syringe)',
+  refs:'SOAP Guidelines Spinal Hypotension 2022'
+},
+{
+  id:'phen', name:'Phenylephrine', brand:'Neo-Synephrine®',
+  group:'Vasoactive', route:'IV', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:100,unit:'mcg/mL',form:'dilute: 10 mg + 99 mL NS = 100 mcg/mL (standard)'},
+  class:'Selective α₁-adrenergic agonist (pure vasoconstrictor)',
+  mechanism:'Selective α₁ receptor agonist → arterial vasoconstriction → ↑ SVR → ↑ BP. ไม่มี β effect → reflex bradycardia (baroreceptor), ↓ HR, ↓ CO ถ้าไม่ pre-treat',
+  onset:'1 min IV', duration:'10–20 min IV', halflife:'t½ 2–3 hr',
+  metabolism:'MAO, COMT → inactive metabolites; renal',
+  adult:{
+    spinal_htn: {dose:'50–100 mcg IV bolus', fix:true,              indication:'Spinal hypotension bolus'},
+    prophylaxis:{dose:'25–50 mcg/min infusion', infusion:true,       indication:'Prophylaxis infusion (cesarean)'},
+    infusion:   {dose:'0.5–2 mcg/kg/min',     infusion:true,         indication:'Hypotension vasopressor'},
+  },
+  pedi:{
+    hypotension:{dose:'1–5 mcg/kg IV', mgPerKg:3.0, max:100, indication:'Hypotension bolus'},
+    infusion:   {dose:'0.1–0.5 mcg/kg/min', infusion:true,    indication:'Vasopressor infusion'},
+  },
+  ci:['Bradycardia (severe pre-existing)','Hypovolemia (unopposed vasoconstriction)'],
+  caution:['Reflex bradycardia → may need atropine','↓ CO ใน cardiogenic state','HOCM: pure vasoconstriction ok แต่ watch CO'],
+  sideEffects:['Reflex bradycardia','Hypertension','↓ CO','Ischemia (mesenteric, renal at high dose)'],
+  antidote:'Alpha blocker (phentolamine) ถ้า severe HTN',
+  notes:'First-line สำหรับ spinal-induced hypotension ใน obstetric (ลด fetal academia vs ephedrine) | Standard prep: 10 mg + 99 mL NS = 100 mcg/mL | Prophylaxis infusion: 100 mcg/min หยุดถ้า HR <60 | ระวัง overcorrection hypertension ในผู้ป่วย pre-eclampsia',
+  refs:'SOAP Guidelines 2022; Anesthesiology 2021'
+},
+{
+  id:'nora', name:'Norepinephrine', brand:'Levophed®, Noradrenaline®',
+  group:'Vasoactive', route:'IV Infusion (central line preferred)', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:0.1,unit:'mg/mL',form:'dilute: 4 mg + 46 mL D5W = 80 mcg/mL OR 4 mg + 250 mL = 16 mcg/mL'},
+  class:'Endogenous catecholamine — α₁α₂>β₁; no β₂',
+  mechanism:'Potent α₁ vasoconstriction → ↑↑ SVR → ↑ MAP. Mild β₁: maintains/slightly ↑ HR. Reflex bradycardia อาจเกิด. No β₂ → no bronchodilation. Gold standard vasopressor for septic shock',
+  onset:'1–2 min', duration:'2–5 min after stop', halflife:'t½ 2–3 min',
+  metabolism:'Rapid: COMT + MAO → normetanephrine, VMA',
+  adult:{
+    septic_shock:{dose:'0.01–3 mcg/kg/min (start 0.1)', infusion:true, indication:'Septic shock (SSC 1st line)'},
+    anesthesia: {dose:'0.01–0.3 mcg/kg/min',            infusion:true, indication:'Intraop vasopressor'},
+  },
+  pedi:{
+    shock:      {dose:'0.05–2 mcg/kg/min', infusion:true, indication:'Septic/distributive shock'},
+  },
+  ci:['Hypovolemia uncorrected (relative)','Cyclopropane/halothane anesthesia (dysrhythmias)'],
+  caution:['Extravasation → tissue necrosis (use CVC or large IV)','Mesenteric/renal ischemia (high dose)','Reflex bradycardia'],
+  sideEffects:['Hypertension (overshoot)','Bradycardia','Peripheral ischemia','Tissue necrosis (extravasation)','↓ renal blood flow'],
+  antidote:'Alpha blocker; Phentolamine 5–10 mg SC (extravasation)→ within 12 hr',
+  notes:'EXTRAVASATION: ฉีด phentolamine 5–10 mg in 10 mL NS SC รอบบริเวณภายใน 12 hr | Surviving Sepsis Campaign: first-line vasopressor | ไม่ต้องการ CVC เสมอไป — large peripheral IV ฉุกเฉินได้ แต่ monitor site ทุก hour | ให้ร่วมกับ fluid resuscitation เสมอ',
+  refs:'Surviving Sepsis Campaign 2021; Crit Care 2022'
+},
+{
+  id:'vaso', name:'Vasopressin', brand:'Pitressin®, Vasostrict®',
+  group:'Vasoactive', route:'IV', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:20,unit:'units/mL',form:'20 units/mL (20u/1mL, 100u/5mL)'},
+  class:'Antidiuretic hormone (ADH) analogue — V1a & V2 receptor',
+  mechanism:'V1a receptor: vasoconstriction (splanchnic, skin) | V2 receptor: ↑ H2O reabsorption | V1a: coronary dilation (unlike NE) | Catecholamine-sparing | ไม่ขึ้นกับ adrenergic receptor → effective ใน catecholamine-depleted state',
+  onset:'2–5 min', duration:'20–30 min bolus / continuous infusion', halflife:'t½ 10–20 min',
+  metabolism:'Hepatic + renal peptidases',
+  adult:{
+    cpr_acls:    {dose:'40 units IV/IO (one dose เท่านั้น)', fix:true,       indication:'ACLS — CPR (replaces 1st or 2nd epi dose)'},
+    septic_shock:{dose:'0.03–0.04 units/min infusion',       infusion:true,  indication:'Septic shock (adjunct NE)'},
+    gi_bleed:    {dose:'0.2–0.4 units/min infusion',         infusion:true,  indication:'Variceal GI bleeding'},
+  },
+  pedi:{
+    cpr:         {dose:'0.4 units/kg IV', mgPerKg:0.4, max:40, indication:'CPR (single dose)'},
+    diabetes_ins:{dose:'2.5–10 units IM q12h', fix:true,       indication:'Diabetes insipidus'},
+  },
+  ci:['Chronic nephritis (V2 effect)','Ischemic heart disease (relative — V1a coronary constriction)'],
+  caution:['Water retention / hyponatremia (V2 effect)','Mesenteric ischemia (splanchnic)','Skin necrosis (extravasation)','Cardiac ischemia'],
+  sideEffects:['Hyponatremia (prolonged)','Pallor/ischemia','Angina','Mesenteric ischemia','Nausea/vomiting'],
+  antidote:'Supportive',
+  notes:'ACLS: 40 units single dose แทน epinephrine dose ที่ 1 หรือ 2 (not superior — ACLS 2020 allows or removes) | Septic shock: 0.03 units/min fixed dose + titrate NE | Bun ↓ NE requirement 20–30% | ห้ามเพิ่ม dose vasopressin (fixed 0.03–0.04 units/min) | Terlipressin มีฤทธิ์คล้ายใน GI bleeding',
+  refs:'AHA ACLS 2020; SSC 2021'
+},
+{
+  id:'dopa', name:'Dopamine', brand:'Intropin®, Dopamine HCl',
+  group:'Vasoactive', route:'IV Infusion', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:5,unit:'mg/mL',form:'200 mg/40 mL → dilute 200mg + 48mL D5W = 4000 mcg/mL'},
+  class:'Catecholamine — DA, β₁, α₁ (dose-dependent)',
+  mechanism:'Dose-dependent: <3 mcg/kg/min → DA₁ (↑ renal blood flow, GFR); 3–10 → β₁ (↑ CO, HR); >10 → α₁ dominant (↑ SVR). "Renal dose dopamine" (1–3) — clinical benefit disproven',
+  onset:'2–4 min', duration:'10 min after stop', halflife:'t½ 2 min',
+  metabolism:'MAO + COMT → homovanillic acid; also converted to NE in nerve terminals',
+  adult:{
+    inotrope:   {dose:'3–10 mcg/kg/min',  infusion:true, indication:'Inotrope (moderate heart failure)'},
+    vasopressor:{dose:'10–20 mcg/kg/min', infusion:true, indication:'Vasopressor (>10 mcg/kg/min)'},
+    renal_dose: {dose:'1–3 mcg/kg/min',   infusion:true, indication:'"Renal dose" (NOT proven to protect kidney)'},
+  },
+  pedi:{
+    inotrope:   {dose:'5–20 mcg/kg/min',  infusion:true, indication:'Neonatal/pediatric inotrope'},
+  },
+  ci:['Uncorrected hypovolemia','Pheochromocytoma','Ventricular fibrillation'],
+  caution:['Tachyarrhythmia (↑ HR)','Extravasation → necrosis (phentolamine)','MAO inhibitor: ↑ effect 10×'],
+  sideEffects:['Tachyarrhythmia','Vasoconstriction (high dose)','Nausea/vomiting','Hypertension','Tissue necrosis (extravasation)'],
+  antidote:'Phentolamine SC (extravasation)',
+  notes:'"Renal dose dopamine" ไม่มีหลักฐานว่าป้องกัน AKI — ไม่แนะนำใช้เพื่อวัตถุประสงค์นี้อีกต่อไป | Second-line to NE ใน septic shock | Neonates: ยาหลักสำหรับ hypotension ใน preterm | ผสม: 200 mg + 48 mL = 4000 mcg/mL',
+  refs:'SSC 2021; Cochrane renal dose dopamine 2016'
+},
+// ── REVERSAL AGENTS ───────────────────────────────────────────
+{
+  id:'sug', name:'Sugammadex', brand:'Bridion®',
+  group:'Reversal', route:'IV', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:100,unit:'mg/mL',form:'200 mg/2 mL (100 mg/mL); 500 mg/5 mL'},
+  class:'Modified gamma-cyclodextrin — selective NMB encapsulator',
+  mechanism:'Encapsulates Rocuronium/Vecuronium in 1:1 complex → removes from NMJ → immediate plasma sequestration → complete reversal. ไม่ใช่ ChE inhibitor → ไม่ต้องการ Atropine',
+  onset:'3 min (dose-dependent)', duration:'Permanent (complex ออก renal)', halflife:'t½ complex = t½ renal clearance',
+  metabolism:'Renal excretion of intact complex (unchanged)',
+  adult:{
+    moderate:   {dose:'2 mg/kg (TOF count ≥2)',  mgPerKg:2.0,  max:200,  indication:'Moderate block reversal (T2)'},
+    deep:       {dose:'4 mg/kg (1–2 post-tetanic)',mgPerKg:4.0, max:400,  indication:'Deep block reversal (PTC 1–2)'},
+    rsi_reversal:{dose:'16 mg/kg (immediate)',    mgPerKg:16.0, max:1600, indication:'Immediate reversal (3 min after RSI 1.2mg/kg Roc)'},
+  },
+  pedi:{
+    moderate:   {dose:'2 mg/kg',  mgPerKg:2.0, max:200, indication:'Moderate block ≥2yr'},
+    deep:       {dose:'4 mg/kg',  mgPerKg:4.0, max:400, indication:'Deep block ≥2yr'},
+    infant:     {dose:'2–4 mg/kg',mgPerKg:3.0, max:100, indication:'Infant (limited data)'},
+  },
+  ci:['Allergy to sugammadex (anaphylaxis 1:500)','Renal failure CrCl <30 mL/min (relative — complex may not excrete)'],
+  caution:['Anaphylaxis risk (0.2%)','Re-curarization: ต้องแน่ใจ reversal สมบูรณ์ + TOF ≥0.9','Toremifene/hormone interactions','Pediatric <2yr: limited data'],
+  sideEffects:['Anaphylaxis/hypersensitivity (0.2%)','Dysgeusia','Bradycardia','Nausea'],
+  antidote:'ไม่มี antidote for sugammadex — ถ้า re-curarize ให้ Rocuronium ซ้ำ (sugammadex complex saturated)→ Succinylcholine หรือ NMB อื่น',
+  notes:'TOF monitoring บังคับก่อน extubation: TOF ratio ≥0.9 | RSI reversal 16 mg/kg ≈ 1200 mg สำหรับ 75 kg — ราคาสูง | ระวัง re-curarization ถ้า dose ไม่เพียงพอ | Renal failure: complex สะสม แต่ไม่มี re-curarization จาก complex — ปลอดภัยแต่ monitor | Hormonal contraceptive failure (7 วัน) — แจ้ง patient',
+  refs:'Anesthesiology 2023; SOBA Sugammadex Guidelines 2022'
+},
+{
+  id:'neost', name:'Neostigmine', brand:'Prostigmin®',
+  group:'Reversal', route:'IV/IM/SC', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:0.5,unit:'mg/mL',form:'0.5 mg/mL (2.5mg/5mL); 2.5 mg/mL available'},
+  class:'Anticholinesterase — reversible AChE inhibitor',
+  mechanism:'Inhibits AChE at NMJ → ↑ ACh accumulation → competitive displacement of NMB from nicotinic receptor → NMB reversal. Muscarinic side effects (bradycardia, secretions) → MUST give with Atropine/Glycopyrrolate',
+  onset:'5–10 min', duration:'20–60 min', halflife:'t½ 60–90 min',
+  metabolism:'Hepatic hydrolysis + renal excretion',
+  adult:{
+    reversal:  {dose:'0.04–0.07 mg/kg + Atropine 0.02 mg/kg', mgPerKg:0.05, max:5.0, indication:'NMB reversal (TOF ≥2)'},
+    myasthenia:{dose:'0.5–2.5 mg IV q4–6h', fix:true,                                  indication:'Myasthenia gravis treatment'},
+  },
+  pedi:{
+    reversal:  {dose:'0.05–0.07 mg/kg + Atropine 0.02 mg/kg', mgPerKg:0.05, max:2.5, indication:'NMB reversal ≥1yr'},
+  },
+  ci:['Mechanical intestinal obstruction','Urinary obstruction','Used without Atropine (bradycardia/bronchospasm)'],
+  caution:['ใช้เฉพาะ TOF count ≥2 (ถ้า deep block → sugammadex)','Max dose: 5 mg ผู้ใหญ่','Asthma: ↑ bronchospasm risk','ไตเสีย: ↑ t½'],
+  sideEffects:['Bradycardia (without Atropine)','Bronchoconstriction','↑ Secretions','Nausea/vomiting','Bowel cramps','Urinary urgency'],
+  antidote:'Atropine (muscarinic effects)',
+  notes:'ต้องให้ร่วมกับ Atropine 0.02 mg/kg หรือ Glycopyrrolate 0.01 mg/kg ALWAYS | TOF ≥2 เท่านั้น — ถ้า TOF<2 ใช้ Sugammadex | Max dose 5 mg ผู้ใหญ่ (ไม่มีประโยชน์เพิ่มหลังจากนี้) | Sugammadex preferred ถ้ามีใช้ (เร็ว + สมบูรณ์กว่า)',
+  refs:'Miller\'s 9th; SOBA NMB Guidelines 2022'
+},
+{
+  id:'nalox', name:'Naloxone', brand:'Narcan®, Evzio®',
+  group:'Reversal', route:'IV/IM/SC/IN', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:0.4,unit:'mg/mL',form:'0.4 mg/mL (0.4mg/1mL); 2 mg/2 mL autoinjector'},
+  class:'Opioid receptor antagonist — pure competitive antagonist',
+  mechanism:'Competitive antagonist at μ>κ>δ opioid receptors → displaces opioid → rapid reversal of opioid effects including respiratory depression. No agonist activity',
+  onset:'1–2 min IV', duration:'30–90 min (SHORTER than most opioids → re-narcotization)', halflife:'t½ 1–2 hr',
+  metabolism:'Hepatic glucuronidation → naloxone-3-glucuronide; extensive first-pass oral',
+  adult:{
+    respiratory:{dose:'0.04 mg IV q2min (titrate) max 2 mg', fix:true,             indication:'Opioid respiratory depression (titrate slowly)'},
+    overdose:   {dose:'0.4–2 mg IV/IM/SC q2–3 min',         fix:true,             indication:'Suspected opioid OD'},
+    infusion:   {dose:'2/3 reversal dose per hr infusion',   infusion:true,         indication:'Long-acting opioid reversal'},
+    intranasal: {dose:'4 mg IN per nostril (2 mg each)',     fix:true,             indication:'Community opioid OD (IN)'},
+  },
+  pedi:{
+    respiratory:{dose:'0.01 mg/kg IV', mgPerKg:0.01, max:0.1, indication:'Respiratory depression'},
+    overdose:   {dose:'0.01 mg/kg IV/IM q2–3 min', mgPerKg:0.01, max:2.0, indication:'Opioid OD'},
+    neonatal:   {dose:'0.01 mg/kg IV/IM',           mgPerKg:0.01, max:0.1, indication:'Neonatal opioid depression'},
+  },
+  ci:['Dependency patients (will precipitate acute withdrawal)'],
+  caution:['Re-narcotization: t½ naloxone < most opioids → monitor ≥1 hr after reversal','Acute withdrawal: hypertension, tachycardia, pulmonary edema, VF (in opioid-dependent)','Titrate slowly in post-op (preserve some analgesia)'],
+  sideEffects:['Acute opioid withdrawal','Hypertension/tachycardia','Pulmonary edema','Ventricular arrhythmias (rare)','Nausea/vomiting'],
+  antidote:'ไม่มี antidote for naloxone',
+  notes:'Titrate ทีละ 0.04–0.08 mg เพื่อรักษาระดับ analgesia + แก้ respiratory depression | Re-narcotization เกิดได้ใน long-acting opioids (morphine, methadone) → infusion + monitoring | IN route: effective community setting (opiate OD) | Neonates: moms ที่ได้ opioid intrapartum → naloxone 0.01 mg/kg IM/IV ถ้า respiratory depression',
+  refs:'AHA ACLS 2020; WHO Opioid Overdose Management 2020'
+},
+{
+  id:'flum', name:'Flumazenil', brand:'Anexate®, Romazicon®',
+  group:'Reversal', route:'IV', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:0.1,unit:'mg/mL',form:'0.5 mg/5 mL (0.1 mg/mL); 1 mg/10 mL'},
+  class:'Benzodiazepine antagonist — competitive GABA-A receptor antagonist',
+  mechanism:'Competitive antagonist at benzodiazepine binding site of GABA-A receptor → reverses BZD sedation, amnesia, respiratory depression. Short-acting → re-sedation common',
+  onset:'1–2 min IV', duration:'30–90 min (re-sedation risk)', halflife:'t½ 50–70 min (SHORTER than most BZD)',
+  metabolism:'Hepatic: carbamate hydrolysis → inactive; rapid clearance',
+  adult:{
+    reversal:  {dose:'0.2 mg IV q1min; max 1 mg total',  fix:true,             indication:'BZD sedation reversal'},
+    overdose:  {dose:'0.2 mg q1min up to 3–5 mg total',  fix:true,             indication:'BZD overdose'},
+    infusion:  {dose:'0.1–0.4 mg/hr',                    infusion:true,         indication:'Prolonged BZD infusion reversal'},
+  },
+  pedi:{
+    reversal:  {dose:'0.01 mg/kg IV q1min (max 0.2 mg)', mgPerKg:0.01, max:0.2, indication:'BZD sedation reversal'},
+  },
+  ci:['BZD-dependent patients (seizures)','Tricyclic antidepressant co-ingestion (unmask TCA seizures)','Epilepsy controlled by BZD'],
+  caution:['Re-sedation: t½ flumazenil < most BZD → monitor ≥2 hr','ไม่แก้ CNS depression จาก non-BZD (opioids, alcohol, other GABA drugs)','Seizures ใน BZD-dependent (acute withdrawal)'],
+  sideEffects:['Re-sedation','Seizures (BZD withdrawal)','Nausea/vomiting','Agitation','Anxiety'],
+  antidote:'ไม่มี antidote for flumazenil',
+  notes:'Re-sedation almost certain ถ้า ใช้ BZD dose สูงหรือ long-acting BZD (diazepam) — monitor 2+ hr และ consider infusion | ไม่แก้ respiratory depression จาก opioids | ไม่ควรใช้เป็น routine reversal (re-sedation, seizure risk) — เฉพาะ emergency | ใน ICU/OD: ระวัง multiple drug ingestion',
+  refs:'Miller\'s 9th; Toxicology Guidelines 2022'
+},
+// ── ANTIEMETICS ───────────────────────────────────────────────
+{
+  id:'ond', name:'Ondansetron', brand:'Zofran®, Ondaron®',
+  group:'Antiemetic', route:'IV/PO', alertLevel:'green', alert:'SAFE',
+  concentration:{value:2,unit:'mg/mL',form:'4 mg/2 mL (2 mg/mL); 8 mg/4 mL'},
+  class:'Selective 5-HT₃ receptor antagonist',
+  mechanism:'Selective antagonist at 5-HT₃ receptors (peripheral vagal nerve endings + CTZ) → blocks serotonin-mediated N/V signaling. No dopamine/histamine effect',
+  onset:'5–10 min IV', duration:'4–8 hr', halflife:'t½ 4 hr',
+  metabolism:'Hepatic CYP3A4, CYP1A2 → 8-hydroxy-ondansetron; renal excretion',
+  adult:{
+    ponv_prophy:{dose:'4–8 mg IV at end of surgery', fix:true,             indication:'PONV prophylaxis'},
+    ponv_treat: {dose:'4 mg IV prn q4–6h',           fix:true,             indication:'PONV treatment'},
+    chemo_nv:   {dose:'8 mg IV q8h',                 fix:true,             indication:'Chemotherapy-induced N/V'},
+  },
+  pedi:{
+    ponv:       {dose:'0.1 mg/kg IV (max 4 mg)', mgPerKg:0.1, max:4.0, indication:'PONV prophylaxis/treatment'},
+    infant:     {dose:'0.05 mg/kg IV',           mgPerKg:0.05,max:2.0, indication:'Infant (1–4 mo)'},
+  },
+  ci:['Congenital long QT syndrome','Electrolyte abnormalities (hypokalemia, hypomagnesemia)'],
+  caution:['QTc prolongation (especially + other QT-prolonging drugs)','Serotonin syndrome ถ้าร่วมกับ serotonergic drugs','Hepatic failure: ลด dose'],
+  sideEffects:['Headache','QTc prolongation (dose-dependent)','Constipation','Flushing','Serotonin syndrome (rare)'],
+  antidote:'Supportive; correct QTc-prolonging factors',
+  notes:'Standard PONV prophylaxis SAMBA guidelines: Ondansetron 4 mg IV ± Dexamethasone 4 mg | ฉีดช้า (30 sec–2 min) ลด QTc effect | Aprepitant (NK1 antagonist) เพิ่มประสิทธิภาพใน high-risk PONV | Apfel score ≥3 → ให้ ≥2 prophylactic antiemetics',
+  refs:'SAMBA PONV Guidelines 2020; BJA 2022'
+},
+{
+  id:'dex2', name:'Dexamethasone', brand:'Decadron®, Fortecortin®',
+  group:'Antiemetic', route:'IV/IM/PO', alertLevel:'green', alert:'SAFE',
+  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL (5mg/1mL, 10mg/2mL)'},
+  class:'Glucocorticoid — mechanism for PONV: anti-inflammatory + ↓ prostaglandin + serotonin modulation',
+  mechanism:'Glucocorticoid receptor binding → ↓ prostaglandins, ↓ inflammatory mediators → PONV effect likely via ↓ CTZ prostaglandin. Also: ↑ brain 5-HT₃ + opioid receptor sensitivity (Unclear exact mechanism) | Analgesic anti-inflammatory | ↓ Airway edema',
+  onset:'30 min–1 hr (PONV); 6–12 hr (anti-inflammatory)', duration:'12–36 hr', halflife:'t½ 190 min (plasma); biological t½ 36–54 hr',
+  metabolism:'Hepatic CYP3A4; renal',
+  adult:{
+    ponv_prophy:{dose:'4–8 mg IV at induction', fix:true,             indication:'PONV prophylaxis (give at induction)'},
+    airway_edema:{dose:'0.5 mg/kg IV',          mgPerKg:0.5, max:24, indication:'Airway edema (post-extubation stridor)'},
+    dexamethasone_analg:{dose:'0.1 mg/kg IV',  mgPerKg:0.1, max:8,  indication:'Analgesic adjunct (post-op pain ↓)'},
+    anti_inflam: {dose:'4–20 mg IV/PO q6–12h', fix:true,             indication:'Anti-inflammatory/immunosuppression'},
+  },
+  pedi:{
+    ponv:       {dose:'0.1–0.15 mg/kg IV', mgPerKg:0.12, max:8.0, indication:'PONV prophylaxis'},
+    croup:      {dose:'0.6 mg/kg PO/IM',   mgPerKg:0.6,  max:10,  indication:'Croup (single dose)'},
+    airway:     {dose:'0.5 mg/kg IV',      mgPerKg:0.5,  max:12,  indication:'Post-extubation stridor'},
+  },
+  ci:['Active systemic infection (relative)','Uncontrolled DM (relative)'],
+  caution:['DM: ↑ blood glucose 4–8 hr (monitor)','Immunocompromised','Wound healing (minor effect, single dose ok)','Sepsis: use SSC guidelines'],
+  sideEffects:['Hyperglycemia (4–8 hr post)','Perineal burning/itching (rapid IV)','Insomnia','Mood changes','Wound healing (chronic)'],
+  antidote:'No antagonist',
+  notes:'ให้ที่ induction (ไม่ใช่ end of surgery) เพื่อ PONV prophylaxis — onset ช้า | Single dose perioperative: ไม่มี evidence เพิ่ม infection | ↑ blood glucose ใน DM patients → monitor BG post-op | ฉีดช้า (30 sec–1 min) ลด perineal burning | Apfel PONV score ≥2 → Ondansetron 4 mg + Dexamethasone 4–8 mg',
+  refs:'SAMBA 2020; Cochrane Dex PONV 2022'
+},
+{
+  id:'metoclo', name:'Metoclopramide', brand:'Maxolon®, Plasil®, Reglan®',
+  group:'Antiemetic', route:'IV/IM/PO', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:5,unit:'mg/mL',form:'10 mg/2 mL (5 mg/mL); 50 mg/10 mL'},
+  class:'Dopamine D2 antagonist + 5-HT₄ agonist + 5-HT₃ antagonist (at high dose)',
+  mechanism:'D2 receptor antagonist in CTZ + gut → ↓ N/V | 5-HT₄ agonist → ↑ gastric motility (prokinetic) | ↑ Lower esophageal sphincter tone | Crosses BBB → EPS risk',
+  onset:'1–3 min IV', duration:'1–2 hr', halflife:'t½ 5–6 hr',
+  metabolism:'Hepatic N-dealkylation; renal excretion (mainly unchanged)',
+  adult:{
+    ponv:      {dose:'10 mg IV q6h',             fix:true,             indication:'PONV/nausea treatment'},
+    prokinetic:{dose:'10 mg IV/PO 30 min before meals', fix:true,      indication:'Gastroparesis / ↑ gastric emptying'},
+    full_stomach:{dose:'10 mg IV before induction', fix:true,          indication:'Reduce aspiration risk / full stomach'},
+  },
+  pedi:{
+    nausea:    {dose:'0.1–0.15 mg/kg IV', mgPerKg:0.12, max:10, indication:'Nausea/vomiting'},
+  },
+  ci:['GI obstruction/perforation','Pheochromocytoma','History of tardive dyskinesia'],
+  caution:['EPS (extrapyramidal symptoms): dystonia, akathisia — especially young patients','Tardive dyskinesia (chronic use)','Renal failure: ↓ dose 50%','Neuroleptic malignant syndrome (rare)'],
+  sideEffects:['EPS: acute dystonia, akathisia','Drowsiness','Tardive dyskinesia (long-term)','Diarrhea','QTc prolongation'],
+  antidote:'Diphenhydramine 25–50 mg IV (EPS/dystonia)',
+  notes:'Avoid long-term use (>3 mo) → tardive dyskinesia | EPS risk สูงใน young adults → diphenhydramine 25 mg IV pretreatment | ไม่ใช่ first-line PONV ใน OR → ondansetron preferred | Prokinetic ที่ดีในรายที่ gastroparesis/delayed gastric emptying ก่อนผ่าตัด',
+  refs:'FDA Metoclopramide Warning 2009; Miller\'s 9th'
+},
+// ── ANALGESICS / ADJUNCTS ─────────────────────────────────────
+{
+  id:'keto', name:'Ketorolac', brand:'Toradol®, Ketoflam®',
+  group:'Analgesic', route:'IV/IM', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:30,unit:'mg/mL',form:'30 mg/mL (30mg/1mL, 60mg/2mL)'},
+  class:'NSAID — non-selective COX inhibitor (potent parenteral NSAID)',
+  mechanism:'Non-selective COX-1/COX-2 inhibition → ↓ prostaglandin synthesis → anti-inflammatory, analgesic, antipyretic. No opioid receptor → no respiratory depression. Opioid-sparing 25–45%',
+  onset:'10–30 min IV', duration:'6–8 hr', halflife:'t½ 4–6 hr',
+  metabolism:'Hepatic glucuronidation, hydroxylation → renal excretion',
+  adult:{
+    loading:    {dose:'15–30 mg IV/IM', fix:true,             indication:'Loading dose (IV: 15–30 mg; IM: 30–60 mg)'},
+    maintenance:{dose:'15 mg IV q6h',   fix:true,             indication:'Maintenance (IV) — max 5 days'},
+  },
+  pedi:{
+    analgesia:  {dose:'0.5 mg/kg IV/IM', mgPerKg:0.5, max:30, indication:'Single dose ≥2yr; max 5 days'},
+  },
+  ci:['Renal failure (AKI/CKD eCrCl <30)','Active GI bleeding/ulcer','Coagulation disorders','NSAID allergy/aspirin-exacerbated respiratory disease','Perioperative CABG'],
+  caution:['Elderly: ↓ dose (higher GI/renal risk)','Major bleeding surgery (platelet inhibition COX-1)','Asthma (NSAIDs may trigger)','Volume depletion'],
+  sideEffects:['GI bleeding/ulcer','Renal impairment (acute)','Platelet inhibition → bleeding time ↑','Bronchospasm','Hypertension'],
+  antidote:'Supportive; no antidote',
+  notes:'IV ketorolac = 30 mg ≈ IM morphine 12 mg in analgesic potency | Max 5 days total (IV+IM combined) | ลด opioid requirement 25–45% → ลด PONV, respiratory depression, constipation | Platelet effect reversible (t½ 4–6 hr) → last dose ควร ≥8 hr ก่อน surgery ที่ต้องการ hemostasis | ผู้สูงอายุ: ลด dose เหลือ 15 mg',
+  refs:'FDA Ketorolac Label; ERAS Protocol 2022'
+},
+{
+  id:'paracet', name:'Paracetamol (IV)', brand:'Perfalgan®, Ofirmev®',
+  group:'Analgesic', route:'IV/PO/PR', alertLevel:'green', alert:'SAFE',
+  concentration:{value:10,unit:'mg/mL',form:'1000 mg/100 mL bag (10 mg/mL)'},
+  class:'Para-aminophenol — central COX inhibitor + endocannabinoid / serotonergic modulation',
+  mechanism:'Central COX-2 inhibition + descending serotonergic pathway activation + possible endocannabinoid (AEA inhibitor). No peripheral anti-inflammatory. No platelet effect. No GI toxicity',
+  onset:'5–10 min IV', duration:'4–6 hr', halflife:'t½ 2–3 hr',
+  metabolism:'Hepatic glucuronidation, sulfation (90%) + CYP2E1 → NAPQI (toxic, 5%) → GSH conjugate. NAPQI accumulated in overdose → hepatotoxicity',
+  adult:{
+    analgesia:  {dose:'1000 mg IV q6–8h (max 4g/day)', fix:true,             indication:'Analgesia / antipyretic'},
+    obese_caut: {dose:'15 mg/kg (max 1g/dose, 4g/day)', mgPerKg:15.0, max:1000,indication:'Dose by weight ถ้า <50 kg'},
+  },
+  pedi:{
+    analgesia:  {dose:'15 mg/kg IV/PO q6h', mgPerKg:15.0, max:1000, indication:'Analgesia/antipyresis'},
+    neonatal:   {dose:'10 mg/kg IV q8–12h', mgPerKg:10.0, max:200,  indication:'Neonatal pain/fever'},
+    infant:     {dose:'12.5–15 mg/kg',      mgPerKg:13.0, max:500,  indication:'Infant (1–3 mo)'},
+  },
+  ci:['Severe hepatic failure','Hypersensitivity to paracetamol'],
+  caution:['Chronic alcohol use (↑ NAPQI)','Malnutrition/fasting (↓ GSH)','Renal failure (metabolite accumulation)','<50 kg patients: dose by weight'],
+  sideEffects:['Hepatotoxicity (overdose: >150 mg/kg acute)','Rare hypersensitivity','Elevation LFTs (chronic)'],
+  antidote:'N-Acetylcysteine (NAC): 150 mg/kg IV loading → 50 mg/kg over 4 hr → 100 mg/kg over 16 hr',
+  notes:'Opioid-sparing 20–30% | ปลอดภัยมากถ้า dose ถูกต้อง | IV 15 min infusion (ไม่ใช่ IV push) | ผู้ป่วยน้อยกว่า 50 kg: dose = 15 mg/kg ทุก 6 hr | Max 4 g/day ผู้ใหญ่ / 90 mg/kg/day เด็ก | Multimodal analgesia cornerstone ใน ERAS',
+  refs:'ERAS Society Guidelines 2022; WHO Pain Ladder'
+},
+{
+  id:'dexmeth', name:'Dexamethasone (Analgesic)', brand:'Decadron®',
+  group:'Analgesic', route:'IV', alertLevel:'green', alert:'SAFE',
+  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL'},
+  class:'Glucocorticoid — multimodal analgesia adjunct',
+  mechanism:'↓ Peripheral prostaglandin + bradykinin production (anti-inflammatory) | ↓ C-fiber sensitization | Central sensitization ↓ | Membrane stabilization | Synergistic with local anesthetics in nerve blocks (↑ duration 50–100%)',
+  onset:'1–2 hr', duration:'12–36 hr for analgesic effect', halflife:'t½ 190 min plasma',
+  adult:{
+    nerve_block:{dose:'4–8 mg perineural (or IV)', fix:true,            indication:'Prolong nerve block duration (IV = perineural efficacy)'},
+    analgesia:  {dose:'0.1–0.2 mg/kg IV',         mgPerKg:0.15, max:16, indication:'Multimodal analgesia adjunct'},
+  },
+  pedi:{
+    analgesia:  {dose:'0.1–0.2 mg/kg IV', mgPerKg:0.15, max:8, indication:'Analgesia adjunct'},
+  },
+  ci:['Active systemic infection (relative)'],
+  caution:['Hyperglycemia','DM patients'],
+  sideEffects:['Hyperglycemia','Perineal burning (rapid IV)'],
+  antidote:'None',
+  notes:'IV dexamethasone = perineural dexamethasone ใน extending block duration — ไม่จำเป็นต้องฉีดเข้าเส้นประสาทโดยตรง | ลด post-op pain, opioid consumption, PONV ในขณะเดียวกัน | ERAS cornerstone drug',
+  refs:'ASRA 2022; Regional Anesthesia 2023'
+},
+];
+
+/* ================================================================
+   STATE
+================================================================ */
+let ptype = 'adult', selDrug = null, curGrp = 'all', curSrch = '';
+
+/* ================================================================
+   THEME
+================================================================ */
+(()=>{ const t=localStorage.getItem('ort')||'light'; document.documentElement.setAttribute('data-theme',t); })();
+function toggleTheme(){
+  const n = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',n);
+  localStorage.setItem('ort',n);
+}
+
+/* ================================================================
+   PATIENT TYPE
+================================================================ */
+function setPtype(t){
+  ptype = t;
+  document.getElementById('btn-a').classList.toggle('on', t==='adult');
+  document.getElementById('btn-p').classList.toggle('on', t==='pedi');
+  if(selDrug) renderRight(selDrug);
+}
+
+/* ================================================================
+   DRUG LIST
+================================================================ */
+function filtered(){
+  const q = curSrch.toLowerCase();
+  return DRUGS.filter(d => {
+    const gok = curGrp==='all' || d.group===curGrp;
+    const sok = !q || d.name.toLowerCase().includes(q) || (d.brand||'').toLowerCase().includes(q) || d.group.toLowerCase().includes(q);
+    return gok && sok;
+  });
+}
+
+function renderList(){
+  const list = filtered();
+  const el = document.getElementById('dlist');
+  if(!list.length){
+    el.innerHTML=`<div style="text-align:center;padding:32px 16px;color:var(--t3)">
+      <div style="font-size:36px;margin-bottom:10px">🔍</div>
+      <div style="font-size:14px">ไม่พบยาที่ค้นหา</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(d => {
+    const isSel = selDrug && selDrug.id === d.id;
+    const cl = d.alertLevel==='red'?'ar':d.alertLevel==='orange'?'ao':'ag';
+    const bc = d.alertLevel==='red'?'br':d.alertLevel==='orange'?'bo':'bg';
+    const ico = d.alertLevel==='red'?'⚠️':d.alertLevel==='orange'?'⚡':'✓';
+    return `<div class="ditem ${cl} ${isSel?'sel':''}" onclick="selectDrug('${d.id}')">
+      <div class="di-top">
+        <div>
+          <div class="di-name">${d.name}</div>
+          <div class="di-grp">${d.group} · ${d.route}</div>
+        </div>
+        <span class="di-arr">›</span>
+      </div>
+      <div class="di-tags">
+        <span class="badge ${bc}">${ico} ${d.alert}</span>
+        <span class="badge bb">${d.class.split('—')[0].trim()}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setGrp(g, el){
+  curGrp = g;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  renderList();
+}
+
+function filterDrugs(v){
+  curSrch = v;
+  document.getElementById('sclr').style.display = v?'flex':'none';
+  renderList();
+}
+
+function clearSearch(){
+  document.getElementById('srch').value='';
+  filterDrugs('');
+}
+
+/* ================================================================
+   SELECT DRUG → render right panel
+================================================================ */
+function selectDrug(id){
+  selDrug = DRUGS.find(d=>d.id===id);
+  if(!selDrug) return;
+  renderList();
+  renderRight(selDrug);
+  // scroll right panel into view on mobile
+  document.getElementById('right').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderRight(d){
+  const w = parseFloat(document.getElementById('gweight').value)||0;
+  const dd = ptype==='adult' ? d.adult : (d.pedi||d.adult);
+  const ac = d.alertLevel;
+  const aico = ac==='red'?'🔴':ac==='orange'?'🟠':'🟢';
+  const acls = ac==='red'?'r':ac==='orange'?'o':'g';
+
+  document.getElementById('right').innerHTML = `
+  <div class="dcard">
+    <!-- HERO -->
+    <div class="dhero">
+      <div class="d-tags">
+        <span class="badge ${ac==='red'?'br':ac==='orange'?'bo':'bg'}">${aico} ${d.alert}</span>
+        <span class="badge bb">${d.group}</span>
+        <span class="badge" style="background:var(--bd);color:var(--t2)">${d.route}</span>
+        ${d.brand?`<span class="badge" style="background:var(--bd);color:var(--t3)">${d.brand}</span>`:''}
+      </div>
+      <div class="dname">${d.name}</div>
+      <div style="font-size:13px;color:var(--t2);margin-bottom:16px;font-family:var(--mono)">${d.class}</div>
+      <div class="dalert ${acls}">
+        <span class="dalert-ico">${aico}</span>
+        <div class="dalert-txt"><strong>${d.alert}:</strong> ${d.notes}</div>
+      </div>
+    </div>
+
+    <!-- CALC -->
+    <div class="dcalc">
+      <div class="calc-label">🧮 คำนวณ Dose — ${ptype==='adult'?'ผู้ใหญ่':'เด็ก'}</div>
+      ${w===0 ? `<div class="nw">⚖️ กรอกน้ำหนักผู้ป่วยที่ Header เพื่อคำนวณ dose อัตโนมัติ</div>` : ''}
+      ${renderResultBox(d, dd, w)}
+    </div>
+
+    <!-- DOSE TABLE -->
+    <div class="dose-sec">
+      <div class="sec-title">📋 Dose Reference — ${ptype==='adult'?'ผู้ใหญ่':'เด็ก'}</div>
+      <div class="dose-grid">
+        ${renderDoseRows(d, dd, w)}
+      </div>
+    </div>
+
+    <!-- PHARMACOLOGY -->
+    <div class="detail-sec">
+      <div class="sec-title">🔬 รายละเอียดยา</div>
+      <div class="acc">
+        ${makeAcc('⚙️','pharmacology','สรีรวิทยาและเภสัชวิทยา','#acc-d1',`
+          <table class="itbl">
+            <tr><td>Mechanism</td><td>${d.mechanism}</td></tr>
+            <tr><td>Onset</td><td>${d.onset}</td></tr>
+            <tr><td>Duration</td><td>${d.duration}</td></tr>
+            <tr><td>Half-life</td><td>${d.halflife}</td></tr>
+            <tr><td>Metabolism</td><td>${d.metabolism}</td></tr>
+            <tr><td>Concentration</td><td>${d.concentration.form}</td></tr>
+          </table>`,'bg')}
+        ${makeAcc('⚠️','safety','ข้อห้ามและข้อควรระวัง','#acc-d2',`
+          <div style="margin-bottom:12px">
+            <div style="font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Contraindications</div>
+            <div class="pill-list">${(d.ci||[]).map(x=>`<span class="pill red">${x}</span>`).join('')}</div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--ora);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Cautions / ข้อควรระวัง</div>
+            <div class="pill-list">${(d.caution||[]).map(x=>`<span class="pill ora">${x}</span>`).join('')}</div>
+          </div>`,'br')}
+        ${makeAcc('💊','sideeffects','ผลข้างเคียง','#acc-d3',`
+          <div class="pill-list">${(d.sideEffects||[]).map(x=>`<span class="pill">${x}</span>`).join('')}</div>
+          <div style="margin-top:12px">
+            <div style="font-size:12px;font-weight:700;color:var(--grn);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Antidote / การรักษา</div>
+            <div style="font-size:14px;color:var(--t1)">${d.antidote||'Supportive care'}</div>
+          </div>`,'bg')}
+        ${makeAcc('📚','refs','References','#acc-d4',`<div style="font-size:13px;color:var(--t2);line-height:1.7">${d.refs||'—'}</div>`,'bb')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderResultBox(d, dd, w){
+  if(w===0) return `<div class="rbox empty-res">
+    <div class="rcell"><div class="rlbl">Dose</div><div class="rval">—</div><div class="runit">กรอกน้ำหนัก</div></div>
+    <div class="rcell"><div class="rlbl">Volume</div><div class="rval">—</div><div class="runit">mL</div></div>
+    <div class="rcell"><div class="rlbl">Concentration</div><div class="rval">—</div><div class="runit">${d.concentration.unit}/mL</div></div></div>`;
+
+  const fk = Object.keys(dd||{})[0];
+  const fv = dd?.[fk];
+  if(!fv?.mgPerKg && !fv?.fix) return `<div class="rbox empty-res"><div class="rcell" style="grid-column:1/-1"><div class="rlbl">ข้อมูล Dose</div><div class="rval" style="font-size:18px">${fv?.dose||fv?.note||'ดู Reference ด้านล่าง'}</div><div class="runit">${fv?.indication||''}</div></div></div>`;
+
+  const dose = Math.min((fv.mgPerKg||0)*w, fv.max||9999);
+  const conc = d.concentration.value;
+  const vol = conc>0 ? (dose/conc) : 0;
+  const maxed = fv.max && ((fv.mgPerKg||0)*w) > fv.max;
+
+  return `<div class="rbox">
+    <div class="rcell">
+      <div class="rlbl">Dose คำนวณ (${fv.indication||fk})</div>
+      <div class="rval">${dose.toFixed(1)}</div>
+      <div class="runit">${d.concentration.unit} · ${fv.mgPerKg} ${d.concentration.unit}/kg × ${w} kg${maxed?` · <strong>MAX ${fv.max}</strong>`:''}</div>
+    </div>
+    <div class="rcell">
+      <div class="rlbl">Volume</div>
+      <div class="rval">${vol>0?vol.toFixed(2):'—'}</div>
+      <div class="runit">mL</div>
+    </div>
+    <div class="rcell">
+      <div class="rlbl">Concentration</div>
+      <div class="rval">${d.concentration.value}</div>
+      <div class="runit">${d.concentration.unit}/mL · ${d.concentration.form.split('(')[0].trim()}</div>
+    </div>
+  </div>`;
+}
+
+function renderDoseRows(d, dd, w){
+  const indLabel = {
+    induction:'Induction',intubation:'Intubation',rsi:'RSI',maintenance:'Maintenance',
+    sedation:'Sedation',analgesia:'Analgesia',epidural:'Epidural',spinal:'Spinal',
+    im_ind:'IM induction',oral_pre:'Oral premedication',im:'IM',iv:'IV',
+    cardiac:'Cardiac / ACLS',anaphylaxis:'Anaphylaxis',hypotension:'Hypotension',
+    cpr:'CPR / ACLS',moderate:'Moderate NMB (T2)',deep:'Deep NMB',rsi_reversal:'Immediate RSI',
+    prophylaxis:'Prophylaxis',infusion:'Infusion',loading:'Loading',
+    nerve_block:'Nerve block',with_epi:'With Epinephrine',infiltration:'Infiltration',
+    topical:'Topical',antiarrhyth:'Antiarrhythmic',eld:'Elderly',labor_epi:'Labor Epidural',
+    nerve_inf:'Perineural infusion',reversal:'Reversal',myasthenia:'Myasthenia Gravis',
+    overdose:'Overdose',intranasal:'Intranasal',inotrope:'Inotrope',vasopressor:'Vasopressor',
+    renal_dose:'Renal dose',gi_bleed:'GI Bleeding',cpr_acls:'CPR/ACLS',
+    septic_shock:'Septic Shock',organophosphate:'Organophosphate',full_stomach:'Full Stomach',
+    ponv:'PONV',ponv_prophy:'PONV prophylaxis',ponv_treat:'PONV treatment',chemo_nv:'Chemo N/V',
+    im_premed:'IM premedication',premedication:'Premedication',icu:'ICU Sedation',seizure:'Seizure',
+    mac:'MAC Sedation',awake_fob:'Awake FOB',anesthesia:'Anesthesia',
+    airway_edema:'Airway Edema',dexamethasone_analg:'Analgesic adjunct',anti_inflam:'Anti-inflammatory',
+    croup:'Croup',spinal_htn:'Spinal Hypotension',neonatal:'Neonatal',infant:'Infant',cardiac_ped:'Cardiac (Ped)',
+    pca:'PCA',intrathecal:'Intrathecal',obese_caut:'Obese/Underweight',
+    bronchospasm:'Bronchospasm',local_hemo:'Local Hemostasis',nerve_block_b:'Nerve Block',
+    loading:'Loading',icusedate:'ICU Sedation',laryn:'Laryngospasm',
+    im_ind:'IM Induction',oral_pre:'Oral Premedication',with_epi:'+ Epinephrine',
+    analgesic:'Sub-dissociative analgesia',eld:'Elderly (ลด dose)',
+    cardiac_ped:'Cardiac Pediatric',nerve_block:'Nerve Block',infusion:'Infusion',
+    spinal_0_5:'Spinal 0.5%',nerve_block:'Nerve Block',caudal:'Caudal',
+    epidural_inf:'Epidural infusion',intrathecal:'Intrathecal',
+    spinal_htn:'Spinal hypotension',bronchospasm:'Bronchospasm',
+    prophylaxis:'Prophylaxis (spinal)',im_premed:'IM Premedication',
+    eld:'Elderly',loading:'Loading dose',
+  };
+  const colors = ['#0055ff','#059669','#c2670a','#7c3aed','#0891b2','#dc2626','#6366f1','#0a7c52','#d97706'];
+  const entries = Object.entries(dd||{}).filter(([k,v])=>typeof v==='object');
+
+  if(!entries.length) return `<div class="nw">ไม่มีข้อมูล dose สำหรับประเภทนี้</div>`;
+
+  return entries.map(([k,v],i)=>{
+    const col = colors[i%colors.length];
+    const infusion = v.infusion;
+    let calcHtml = '';
+    if(v.mgPerKg && w>0){
+      const dose = Math.min(v.mgPerKg*w, v.max||9999);
+      const vol = d.concentration.value>0 ? dose/d.concentration.value : 0;
+      const maxed = v.max && (v.mgPerKg*w)>v.max;
+      calcHtml = `<div class="dr-calc ${maxed?'warn':''}">${dose.toFixed(2)} ${d.concentration.unit}${vol>0?` = ${vol.toFixed(2)} mL`:''}${maxed?` ⚠️MAX`:''}</div>`;
+    }
+    return `<div class="dose-row">
+      <div class="dr-head">
+        <span class="dr-indicator" style="background:${col}"></span>
+        <span class="dr-indication">${indLabel[k]||k}</span>
+        ${infusion?`<span class="dr-type">⚙️ Infusion</span>`:''}
+        ${v.fix?`<span class="dr-type">Fixed dose</span>`:''}
+      </div>
+      <div class="dr-body">
+        <div class="dr-cell">
+          <div class="dr-clbl">Reference Dose</div>
+          <div class="dr-cval">${v.dose||v.note||'—'}</div>
+          ${calcHtml}
+        </div>
+        ${v.mgPerKg?`<div class="dr-cell"><div class="dr-clbl">mg/kg</div><div class="dr-cval">${v.mgPerKg} ${d.concentration.unit}/kg</div></div>`:''}
+        ${v.max?`<div class="dr-cell"><div class="dr-clbl">Max Dose</div><div class="dr-cval" style="color:var(--red)">${v.max} ${d.concentration.unit}</div></div>`:''}
+        ${v.indication?`<div class="dr-cell"><div class="dr-clbl">วัตถุประสงค์</div><div class="dr-cval" style="font-family:var(--font);font-size:13px">${v.indication}</div></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function makeAcc(icon, id, title, tid, body, bc){
+  return `<div class="acc-item" id="${id}">
+    <button class="acc-btn" onclick="toggleAcc('${id}')">
+      <div class="acc-ico" style="background:var(--acc-d)">${icon}</div>
+      <span class="acc-ttl">${title}</span>
+      <span class="acc-arr">▼</span>
+    </button>
+    <div class="acc-body">${body}</div>
+  </div>`;
+}
+function toggleAcc(id){
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+/* ================================================================
+   RECALC on weight change
+================================================================ */
+function recalc(){
+  if(selDrug) renderRight(selDrug);
+}
+
+/* ================================================================
+   INIT
+================================================================ */
+document.addEventListener('DOMContentLoaded', ()=>{ renderList(); });
+</script>
+</body>
+</html>
