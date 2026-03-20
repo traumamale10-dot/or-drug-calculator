@@ -353,40 +353,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
           oninput="recalc()">
         <span>kg</span>
       </div>
-  /* ค้นหา .p-toggle ในไฟล์ CSS แล้วแทนที่ด้วยอันนี้ */
-.p-toggle {
-  display: flex;
-  border: 1.5px solid #ddd;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 5px 0;
-  min-height: 44px; /* ความสูงขั้นต่ำที่นิ้วคนกดง่าย */
-}
-
-.pt-btn {
-  flex: 1;
-  border: none;
-  background: #eee;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 10px;
-  transition: 0.2s;
-}
-
-/* เมื่อเลือกปุ่ม */
-.pt-btn.on {
-  background-color: #007bff; /* หรือสีที่คุณใช้ในโปรเจกต์ */
-  color: white;
-}
-
-/* ปรับให้ hdr-right จัดเรียงสวยขึ้นในมือถือ */
-.hdr-right {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%; /* ให้ยืดเต็มในจอเล็ก */
-}
+<div class="p-toggle">
+  <button class="pt-btn on" id="btn-a" onclick="setPtype('adult')">ผู้ใหญ่</button>
+  <button class="pt-btn" id="btn-p" onclick="setPtype('pedi')">เด็ก</button>
+</div>
       <button class="tpill" onclick="toggleTheme()">
         <div class="tknob"></div>
         <span class="tico sun">☀️</span>
