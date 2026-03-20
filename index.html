@@ -87,12 +87,34 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
 .w-bar span{font-size:12px;color:rgba(255,255,255,.5);font-weight:600}
 
 /* pedi toggle */
-.p-toggle{display:flex;background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.14);border-radius:var(--r4);overflow:hidden}
-.pt-btn{padding:8px 14px;font-size:12px;font-weight:700;color:rgba(255,255,255,.55);
-  cursor:pointer;border:none;background:none;font-family:var(--font);
-  transition:all .2s;white-space:nowrap}
-.pt-btn.on{background:var(--acc);color:#fff;border-radius:var(--r4)}
+.p-toggle {
+  display: flex;
+  width: 100%;             /* เพิ่ม: ให้กล่องขยายกว้างเต็มพื้นที่ */
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: var(--r4);
+  overflow: hidden;
+}
+
+.pt-btn {
+  flex: 1;                 /* เพิ่ม: สั่งให้ปุ่มยืดกว้างออกไปจนเต็มพื้นที่เท่าๆ กัน */
+  padding: 8px 0;          /* แก้: ใช้เลขน้อยๆ เพื่อคุมความสูง (บน-ล่าง 8px, ซ้าย-ขวา 0) */
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,.55);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font);
+  transition: all .2s;
+  white-space: nowrap;
+}
+
+.pt-btn.on {
+  background: var(--acc);
+  color: #fff;
+  border-radius: var(--r4);
+}
 
 /* theme pill */
 .tpill{width:52px;height:28px;background:rgba(255,255,255,.1);
