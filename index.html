@@ -88,35 +88,33 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
 
 /* pedi toggle */
 .p-toggle {
-  display: flex;
-  background: rgba(255, 255, 255, .08);
-  border: 1px solid rgba(255, 255, 255, .2); /* เพิ่มความชัดของขอบ */
-  border-radius: var(--r4);
-  overflow: hidden;
-  /* เพิ่มส่วนนี้ */
-  flex: 1;             /* ให้ขยายกว้างออกไปเท่าที่พื้นที่ใน Header จะอำนวย */
-  min-width: 120px;    /* กำหนดความกว้างขั้นต่ำให้มองเห็นง่ายขึ้น */
+    display: flex;
+    gap: 8px;          /* เพิ่มช่องว่างระหว่าง 2 ปุ่ม */
+    width: 100%;       /* ขยายกว้างเต็มพื้นที่ */
+    background: none;  /* เอาพื้นหลังแถบเดิมออก */
+    border: none;      /* เอาขอบแถบเดิมออก */
 }
 
+/* ปรับแต่งตัวปุ่มให้ดูเหมือนปุ่มจริงๆ */
 .pt-btn {
-  flex: 1;             /* ให้ปุ่ม ผู้ใหญ่ และ เด็ก แบ่งครึ่งความกว้างกัน */
-  padding: 6px 0;      /* คุมความสูงให้เตี้ย (6px บน-ล่าง) */
-  font-size: 13px;     /* ขยายตัวหนังสือขึ้นนิดเดียว */
-  font-weight: 700;
-  color: rgba(255, 255, 255, .55);
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-family: var(--font);
-  transition: all .2s;
-  white-space: nowrap;
+    flex: 1;
+    padding: 10px 0;   /* ความสูงกำลังดี ไม่หนาไป */
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.1); /* สีพื้นหลังปุ่มที่ไม่ได้เลือก */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px; /* มนสวยงามแยกปุ่มใครปุ่มมัน */
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
+/* เมื่อปุ่มถูกเลือก */
 .pt-btn.on {
-  background: var(--acc);
-  color: #fff;
-  /* ลบ border-radius ออกเพื่อให้สีเต็มช่องสี่เหลี่ยมในแถบ */
-  border-radius: 0; 
+    background: var(--acc); /* สีเน้นที่คุณตั้งไว้ */
+    color: #fff;
+    border-color: var(--acc);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.3); /* เพิ่มแสงเรืองให้เด่น */
 }
 /* theme pill */
 .tpill{width:52px;height:28px;background:rgba(255,255,255,.1);
