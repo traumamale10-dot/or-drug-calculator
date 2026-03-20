@@ -89,19 +89,21 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
 /* pedi toggle */
 .p-toggle {
   display: flex;
-  width: 100%;             /* เพิ่ม: ให้กล่องขยายกว้างเต็มพื้นที่ */
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .2); /* เพิ่มความชัดของขอบ */
   border-radius: var(--r4);
   overflow: hidden;
+  /* เพิ่มส่วนนี้ */
+  flex: 1;             /* ให้ขยายกว้างออกไปเท่าที่พื้นที่ใน Header จะอำนวย */
+  min-width: 120px;    /* กำหนดความกว้างขั้นต่ำให้มองเห็นง่ายขึ้น */
 }
 
 .pt-btn {
-  flex: 1;                 /* เพิ่ม: สั่งให้ปุ่มยืดกว้างออกไปจนเต็มพื้นที่เท่าๆ กัน */
-  padding: 8px 0;          /* แก้: ใช้เลขน้อยๆ เพื่อคุมความสูง (บน-ล่าง 8px, ซ้าย-ขวา 0) */
-  font-size: 12px;
+  flex: 1;             /* ให้ปุ่ม ผู้ใหญ่ และ เด็ก แบ่งครึ่งความกว้างกัน */
+  padding: 6px 0;      /* คุมความสูงให้เตี้ย (6px บน-ล่าง) */
+  font-size: 13px;     /* ขยายตัวหนังสือขึ้นนิดเดียว */
   font-weight: 700;
-  color: rgba(255,255,255,.55);
+  color: rgba(255, 255, 255, .55);
   cursor: pointer;
   border: none;
   background: none;
@@ -113,9 +115,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
 .pt-btn.on {
   background: var(--acc);
   color: #fff;
-  border-radius: var(--r4);
+  /* ลบ border-radius ออกเพื่อให้สีเต็มช่องสี่เหลี่ยมในแถบ */
+  border-radius: 0; 
 }
-
 /* theme pill */
 .tpill{width:52px;height:28px;background:rgba(255,255,255,.1);
   border:1.5px solid rgba(255,255,255,.18);border-radius:99px;
