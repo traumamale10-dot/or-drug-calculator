@@ -302,6 +302,26 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
   padding:10px 16px;font-size:12px;color:var(--t1);
   display:flex;gap:8px;align-items:flex-start;margin-bottom:16px;line-height:1.5}
 
+
+/* ── CONCENTRATION SELECTOR ─────────────────────────────── */
+.conc-sel-wrap{margin-bottom:16px}
+.conc-sel-label{font-size:11px;font-weight:800;color:var(--t2);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:block}
+.conc-sel{width:100%;padding:11px 14px;
+  background:var(--raise);border:2px solid var(--bds);border-radius:var(--r1);
+  font-size:14px;font-family:var(--font);color:var(--t1);
+  cursor:pointer;transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239aaabb' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:36px}
+.conc-sel:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 4px var(--acc-g)}
+.conc-sel option{font-size:14px}
+.conc-badge{display:inline-flex;align-items:center;gap:6px;
+  margin-top:8px;padding:6px 12px;
+  background:var(--acc-d);border-radius:var(--r1);
+  font-size:13px;font-weight:700;color:var(--acc);font-family:var(--mono)}
+
 /* ── RESPONSIVE ──────────────────────────────────────────── */
 @media(max-width:900px){
   .wrap{grid-template-columns:1fr;padding:14px 12px}
@@ -368,14 +388,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
     </div>
     <div class="chips" id="chips">
       <button class="chip on" onclick="setGrp('all',this)">ทั้งหมด</button>
-      <button class="chip" onclick="setGrp('Induction',this)">🎯 ชักนำ</button>
-      <button class="chip" onclick="setGrp('Muscle Relaxant',this)">💪 NMB</button>
+      <button class="chip" onclick="setGrp('Induction',this)">🎯 Induction</button>
+      <button class="chip" onclick="setGrp('Muscle Relaxant',this)">💪 Muscle Relaxant</button>
       <button class="chip" onclick="setGrp('Opioid',this)">💉 Opioid</button>
-      <button class="chip" onclick="setGrp('Local',this)">📍 ยาชา</button>
-      <button class="chip" onclick="setGrp('Sedative',this)">😴 Sedation</button>
+      <button class="chip" onclick="setGrp('Local Anesthetic',this)">📍 Local Anesthetic</button>
+      <button class="chip" onclick="setGrp('Sedative',this)">😴 Sedative</button>
       <button class="chip" onclick="setGrp('Emergency',this)">🚨 Emergency</button>
       <button class="chip" onclick="setGrp('Reversal',this)">↩️ Reversal</button>
-      <button class="chip" onclick="setGrp('Antiemetic',this)">🌿 PONV</button>
+      <button class="chip" onclick="setGrp('Antiemetic',this)">🌿 Antiemetic</button>
       <button class="chip" onclick="setGrp('Vasoactive',this)">❤️ Vasoactive</button>
     </div>
     <div class="dlist" id="dlist"></div>
@@ -401,7 +421,7 @@ const DRUGS = [
 {
   id:'prop', name:'Propofol', brand:'Diprivan®, Fresofol®',
   group:'Induction', route:'IV', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL · ขวด 20 mL (200 mg) · GPO / Fresofol® 50 mL (500 mg)'},
+  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL · GPO',options:[{value:10,label:'10 mg/mL (ขวด 20mL/200mg) · GPO'},{value:10,label:'10 mg/mL (ขวด 50mL/500mg) · Fresofol®'}]},
   class:'Alkylphenol hypnotic',
   mechanism:'Potentiates GABA-A receptor → ↑ Cl⁻ influx → CNS depression. Inhibits NMDA receptor, ↓ glutamate release',
   onset:'15–45 sec IV', duration:'5–10 min (single bolus)', halflife:'t½β 2–24 hr (context-sensitive)',
@@ -426,7 +446,7 @@ const DRUGS = [
 {
   id:'keta', name:'Ketamine', brand:'Ketalar®, Calypsol®',
   group:'Induction', route:'IV/IM/PO', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:50,unit:'mg/mL',form:'50 mg/mL · ขวด 10 mL (500 mg) · GPO | ใช้ 10 mg/mL ต้อง dilute: 1 mL + 4 mL NSS'},
+  concentration:{value:50,unit:'mg/mL',form:'50 mg/mL · GPO',options:[{value:50,label:'50 mg/mL (ขวด 10mL/500mg) · GPO'},{value:10,label:'10 mg/mL (dilute: 1mL Keta + 4mL NSS)'}]},
   class:'Phencyclidine derivative — NMDA antagonist',
   mechanism:'Non-competitive NMDA receptor antagonist → dissociative anesthesia. Preserves airway reflexes & pharyngeal-laryngeal tone. Sympathomimetic: ↑HR, ↑BP, ↑CO via central catecholamine release',
   onset:'60 sec IV / 3–4 min IM', duration:'10–15 min IV / 20–30 min IM', halflife:'t½ 2–3 hr',
@@ -452,7 +472,7 @@ const DRUGS = [
 {
   id:'etom', name:'Etomidate', brand:'Hypnomidate®, Amidate®',
   group:'Induction', route:'IV', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:2,unit:'mg/mL',form:'2 mg/mL · ขวด 10 mL (20 mg) · Hypnomidate® | ใน propylene glycol'},
+  concentration:{value:2,unit:'mg/mL',form:'2 mg/mL · Hypnomidate®',options:[{value:2,label:'2 mg/mL (ขวด 10mL/20mg) · Hypnomidate®'}]},
   class:'Imidazole carboxylate ester',
   mechanism:'GABA-A agonist (like propofol แต่ selective binding) → minimal cardiovascular depression. ไม่มี sympathomimetic',
   onset:'15–45 sec', duration:'5–15 min', halflife:'t½ 2.6 hr',
@@ -474,7 +494,7 @@ const DRUGS = [
 {
   id:'thio', name:'Thiopental', brand:'Pentothal®',
   group:'Induction', route:'IV', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:25,unit:'mg/mL',form:'Powder 500 mg/vial · GPO | ผสม: 500 mg + 20 mL sterile water = 25 mg/mL (2.5%)'},
+  concentration:{value:25,unit:'mg/mL',form:'25 mg/mL · GPO powder',options:[{value:25,label:'25 mg/mL (500mg + 20mL SW = 2.5%)'},{value:20,label:'20 mg/mL (500mg + 25mL SW)'}]},
   class:'Barbiturate',
   mechanism:'GABA-A allosteric modulator → ↑ Cl⁻ conductance, ↓ neuronal excitability. ↓ CMRO2, ICP, IOP',
   onset:'10–30 sec', duration:'5–10 min', halflife:'t½ 9–12 hr',
@@ -498,7 +518,7 @@ const DRUGS = [
 {
   id:'succ', name:'Succinylcholine', brand:'Anectine®, Quelicin®',
   group:'Muscle Relaxant', route:'IV/IM', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:50,unit:'mg/mL',form:'50 mg/mL · ขวด 2 mL (100 mg) · GPO | Anectine® 200mg/10mL (20mg/mL)'},
+  concentration:{value:50,unit:'mg/mL',form:'50 mg/mL · GPO',options:[{value:50,label:'50 mg/mL (amp 2mL/100mg) · GPO'},{value:20,label:'20 mg/mL (ขวด 10mL/200mg) · Anectine®'}]},
   class:'Depolarizing NMB — Bis-quaternary ammonium',
   mechanism:'Nicotinic ACh receptor agonist → sustained depolarization → fasciculations → paralysis. Resistant to acetylcholinesterase degradation',
   onset:'45–60 sec IV / 2–3 min IM', duration:'9–12 min', halflife:'Plasma t½ <1 min (pseudocholinesterase)',
@@ -523,7 +543,7 @@ const DRUGS = [
 {
   id:'roc', name:'Rocuronium', brand:'Esmeron®, Zemuron®',
   group:'Muscle Relaxant', route:'IV', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL · ขวด 5 mL (50 mg) / 10 mL (100 mg) · Esmeron®'},
+  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL · Esmeron®',options:[{value:10,label:'10 mg/mL (ขวด 5mL/50mg) · Esmeron®'},{value:10,label:'10 mg/mL (ขวด 10mL/100mg) · Esmeron®'}]},
   class:'Non-depolarizing NMB — Aminosteroid',
   mechanism:'Competitive antagonist at nicotinic ACh receptor (post-synaptic NMJ) → prevents ACh binding → flaccid paralysis. ไม่มี depolarization/fasciculation',
   onset:'60–90 sec (0.6 mg/kg) / 60 sec (1.2 mg/kg RSI)', duration:'30–60 min', halflife:'t½ 66–80 min',
@@ -548,7 +568,7 @@ const DRUGS = [
 {
   id:'vec', name:'Vecuronium', brand:'Norcuron®',
   group:'Muscle Relaxant', route:'IV', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:1,unit:'mg/mL',form:'Powder 4 mg/vial (GPO) หรือ 10 mg/vial · ผสม: 4 mg + 4 mL NSS = 1 mg/mL'},
+  concentration:{value:1,unit:'mg/mL',form:'1 mg/mL · GPO powder',options:[{value:1,label:'1 mg/mL (4mg vial + 4mL NSS) · GPO'},{value:1,label:'1 mg/mL (10mg vial + 10mL NSS) · Norcuron®'}]},
   class:'Non-depolarizing NMB — Aminosteroid',
   mechanism:'Competitive nicotinic ACh receptor antagonist. ไม่มี vagolytic effect → hemodynamic stable กว่า Pancuronium',
   onset:'3–4 min', duration:'25–40 min', halflife:'t½ 65–75 min',
@@ -572,7 +592,7 @@ const DRUGS = [
 {
   id:'atr', name:'Atracurium', brand:'Tracrium®',
   group:'Muscle Relaxant', route:'IV', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL · amp 2.5 mL (25 mg) / amp 5 mL (50 mg) · Tracrium® | เก็บ 2–8°C'},
+  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL · Tracrium®',options:[{value:10,label:'10 mg/mL (amp 2.5mL/25mg) · Tracrium®'},{value:10,label:'10 mg/mL (amp 5mL/50mg) · Tracrium®'}]},
   class:'Non-depolarizing NMB — Benzylisoquinoline',
   mechanism:'Competitive nicotinic ACh receptor antagonist. Hofmann elimination + ester hydrolysis → ไม่สะสมใน organ failure',
   onset:'2–3 min', duration:'20–35 min', halflife:'t½ 20 min',
@@ -597,7 +617,7 @@ const DRUGS = [
 {
   id:'cis', name:'Cisatracurium', brand:'Nimbex®',
   group:'Muscle Relaxant', route:'IV', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:2,unit:'mg/mL',form:'2 mg/mL · ขวด 5 mL (10 mg) / 10 mL (20 mg) · Nimbex® | เก็บ 2–8°C'},
+  concentration:{value:2,unit:'mg/mL',form:'2 mg/mL · Nimbex®',options:[{value:2,label:'2 mg/mL (ขวด 5mL/10mg) · Nimbex®'},{value:2,label:'2 mg/mL (ขวด 10mL/20mg) · Nimbex®'}]},
   class:'Non-depolarizing NMB — Benzylisoquinoline (R-cis isomer of atracurium)',
   mechanism:'Competitive nicotinic ACh antagonist. Hofmann elimination dominant → ไม่ขึ้นกับตับ/ไต. Laudanosine น้อยกว่า Atracurium 5 เท่า',
   onset:'3–5 min', duration:'40–60 min', halflife:'t½ 22–29 min',
@@ -622,7 +642,7 @@ const DRUGS = [
 {
   id:'fent', name:'Fentanyl', brand:'Sublimaze®, Fentanyl citrate',
   group:'Opioid', route:'IV/IT/Epidural/TD', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:50,unit:'mcg/mL',form:'50 mcg/mL · amp 2 mL (0.1 mg/100 mcg) · GPO | amp 10 mL (0.5 mg/500 mcg)'},
+  concentration:{value:50,unit:'mcg/mL',form:'50 mcg/mL · GPO',options:[{value:50,label:'50 mcg/mL (amp 2mL/100mcg) · GPO'},{value:50,label:'50 mcg/mL (amp 10mL/500mcg) · GPO'}]},
   class:'Phenylpiperidine — μ-opioid agonist',
   mechanism:'Selective μ-receptor agonist → ↓ substance P, ↑ K⁺ conductance, ↓ Ca²⁺ entry → analgesia, sedation, respiratory depression. Highly lipophilic → rapid CNS penetration',
   onset:'30–60 sec IV', duration:'30–45 min (single dose)', halflife:'t½ 2–4 hr (context-sensitive t½ ↑ ≫ with infusion)',
@@ -649,7 +669,7 @@ const DRUGS = [
 {
   id:'suf', name:'Sufentanil', brand:'Sufenta®',
   group:'Opioid', route:'IV/IT/Epidural', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:5,unit:'mcg/mL',form:'5 mcg/mL · ขวด 10 mL (50 mcg) · Sufenta® | หายากในไทย — ใช้ใน รพ.ใหญ่/cardiac center'},
+  concentration:{value:5,unit:'mcg/mL',form:'5 mcg/mL · Sufenta®',options:[{value:5,label:'5 mcg/mL (ขวด 10mL/50mcg) · Sufenta®'},{value:50,label:'50 mcg/mL (undiluted, ขวด 1mL/50mcg)'}]},
   class:'Phenylpiperidine — μ-opioid agonist (potency 5–10× fentanyl)',
   mechanism:'μ-opioid agonist, กดระบบ sympathetic ต่ำกว่า morphine, highly lipophilic (10× fentanyl), สะสมใน adipose น้อยกว่า fentanyl',
   onset:'1–3 min', duration:'20–45 min (short infusion)', halflife:'t½ 2.7 hr',
@@ -674,7 +694,7 @@ const DRUGS = [
 {
   id:'rem', name:'Remifentanil', brand:'Ultiva®',
   group:'Opioid', route:'IV Infusion', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:20,unit:'mcg/mL',form:'Powder 1 mg/vial · Ultiva® | ผสม: 1 mg + 49 mL NSS = 20 mcg/mL (standard) | หรือ 5 mg + 245 mL = 20 mcg/mL'},
+  concentration:{value:20,unit:'mcg/mL',form:'20 mcg/mL · Ultiva®',options:[{value:20,label:'20 mcg/mL (1mg + 49mL NSS) · standard'},{value:50,label:'50 mcg/mL (1mg + 19mL NSS) · concentrated'},{value:10,label:'10 mcg/mL (1mg + 99mL NSS) · dilute'}]},
   class:'Piperidine — ultra-short μ-opioid agonist (ester linkage)',
   mechanism:'μ-opioid agonist with unique ester bond → hydrolysis by non-specific plasma & tissue esterases → rapid, predictable, context-insensitive offset. Context-sensitive t½ = 3–5 min regardless of infusion duration',
   onset:'1 min', duration:'5–10 min (จาก stop infusion)', halflife:'t½ 3–10 min (infusion-independent)',
@@ -699,7 +719,7 @@ const DRUGS = [
 {
   id:'morph', name:'Morphine', brand:'Morphine Sulfate',
   group:'Opioid', route:'IV/IM/SC/IT/Epidural/PO', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL · amp 1 mL (10 mg) · GPO | amp 5 mL (50 mg) · Controlled drug'},
+  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL · GPO',options:[{value:10,label:'10 mg/mL (amp 1mL/10mg) · GPO'},{value:10,label:'10 mg/mL (amp 5mL/50mg) · GPO'},{value:1,label:'1 mg/mL (dilute: 1mg + 9mL NSS)'}]},
   class:'Phenanthrene — natural opioid agonist',
   mechanism:'μ>κ>δ opioid receptor agonist. Morphine-6-glucuronide (M6G) active metabolite (higher CNS penetration delayed). Histamine release (direct mast cell)',
   onset:'5–10 min IV', duration:'3–5 hr', halflife:'t½ 2–3 hr (M6G t½ 9 hr)',
@@ -724,8 +744,8 @@ const DRUGS = [
 // ── LOCAL ANESTHETICS ─────────────────────────────────────────
 {
   id:'bupi', name:'Bupivacaine', brand:'Marcaine®, Sensorcaine®',
-  group:'Local', route:'Spinal/Epidural/Nerve block/Infiltration', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:5,unit:'mg/mL',form:'0.5% = 5 mg/mL · ขวด 4 mL (20 mg) · Marcaine® | 0.5% Hyperbaric 4 mL (Heavy) | 0.25% ขวด 10/20 mL'},
+  group:'Local Anesthetic', route:'Spinal/Epidural/Nerve block/Infiltration', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:5,unit:'mg/mL',form:'0.5% · Marcaine®',options:[{value:5,label:'0.5% = 5 mg/mL (ขวด 4mL) · Marcaine® isobaric'},{value:5,label:'0.5% Hyperbaric (ขวด 4mL) · Marcaine® Heavy'},{value:2.5,label:'0.25% = 2.5 mg/mL (ขวด 10mL/20mL)'},{value:1.25,label:'0.125% = 1.25 mg/mL (dilute สำหรับ PCEA)'}]},
   class:'Amino-amide LA — long-acting',
   mechanism:'Na⁺ channel blocker (voltage-gated) → ↓ nerve conduction → sensory & motor block. Lipophilic → binds cardiac Na⁺ channel → cardiotoxicity risk',
   onset:'10–20 min nerve block / 2–3 min spinal', duration:'3–8 hr epidural / 2–3 hr spinal', halflife:'t½ 2.7 hr (plasma)',
@@ -751,8 +771,8 @@ const DRUGS = [
 },
 {
   id:'ropi', name:'Ropivacaine', brand:'Naropin®',
-  group:'Local', route:'Epidural/Spinal/Nerve block/Infiltration', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:7.5,unit:'mg/mL',form:'0.75% = 7.5 mg/mL · ขวด 10 mL (75 mg) · Naropin® | 0.5% ขวด 10 mL (50 mg) | 0.2% ขวด 10/20 mL (PCEA)'},
+  group:'Local Anesthetic', route:'Epidural/Spinal/Nerve block/Infiltration', alertLevel:'red', alert:'HIGH ALERT',
+  concentration:{value:7.5,unit:'mg/mL',form:'0.75% · Naropin®',options:[{value:10,label:'1.0% = 10 mg/mL (ขวด 10mL) · Naropin®'},{value:7.5,label:'0.75% = 7.5 mg/mL (ขวด 10mL) · Naropin®'},{value:5,label:'0.5% = 5 mg/mL (ขวด 10mL) · Naropin®'},{value:2,label:'0.2% = 2 mg/mL (ขวด 10/20mL) · PCEA'}]},
   class:'Amino-amide LA — pure S(-)-enantiomer',
   mechanism:'Na⁺ channel blocker — S-enantiomer only → lower cardiac toxicity vs bupivacaine (less lipophilic → shorter cardiac Na⁺ channel binding). Differential block: sensory > motor ที่ low concentration',
   onset:'10–25 min nerve block', duration:'4–8 hr nerve block / 2–6 hr epidural', halflife:'t½ 4.2 hr',
@@ -777,8 +797,8 @@ const DRUGS = [
 },
 {
   id:'lido', name:'Lidocaine', brand:'Xylocaine®, Lignocaine®',
-  group:'Local', route:'IV/Topical/Infiltration/Epidural/Spinal', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:20,unit:'mg/mL',form:'2% = 20 mg/mL · ขวด 20 mL (400 mg) · GPO | 1% ขวด 50 mL | Spinal: 5% hyperbaric 2 mL | 10% spray topical'},
+  group:'Local Anesthetic', route:'IV/Topical/Infiltration/Epidural/Spinal', alertLevel:'orange', alert:'CAUTION',
+  concentration:{value:20,unit:'mg/mL',form:'2% · GPO',options:[{value:20,label:'2% = 20 mg/mL (ขวด 20mL/400mg) · GPO'},{value:10,label:'1% = 10 mg/mL (ขวด 50mL) · GPO'},{value:50,label:'5% Hyperbaric (ขวด 2mL) · Spinal'},{value:100,label:'10% spray · Topical airway'}]},
   class:'Amino-amide LA — short/intermediate acting',
   mechanism:'Na⁺ channel blocker. IV systemic: anti-hyperalgesic, anti-inflammatory (K⁺ channel, NMDA), antiarrhythmic (Vaughan-Williams Ib)',
   onset:'2–5 min infiltration / 2–5 min epidural / 2–3 min spinal', duration:'1–2 hr epidural / 45–75 min spinal', halflife:'t½ 1.5–2 hr',
@@ -807,7 +827,7 @@ const DRUGS = [
 {
   id:'mid', name:'Midazolam', brand:'Dormicum®, Versed®',
   group:'Sedative', route:'IV/IM/PO/Intranasal', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL · amp 3 mL (15 mg) · GPO | amp 10 mL (50 mg) | Syrup 2 mg/mL (เด็ก)'},
+  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL · GPO',options:[{value:5,label:'5 mg/mL (amp 3mL/15mg) · GPO'},{value:5,label:'5 mg/mL (amp 10mL/50mg) · GPO'},{value:1,label:'1 mg/mL (dilute: 1mL + 4mL NSS)'},{value:2,label:'2 mg/mL syrup · เด็ก PO'}]},
   class:'Benzodiazepine (water-soluble, short-acting)',
   mechanism:'GABA-A receptor positive allosteric modulator → ↑ frequency of Cl⁻ channel opening → anxiolysis, sedation, amnesia, anticonvulsant. Imidazole ring → water-soluble at pH <4, lipid-soluble at pH 7.4',
   onset:'2–3 min IV / 10–20 min IM', duration:'30–90 min IV', halflife:'t½ 1.5–2.5 hr',
@@ -836,7 +856,7 @@ const DRUGS = [
 {
   id:'dex', name:'Dexmedetomidine', brand:'Precedex®, Dexdor®',
   group:'Sedative', route:'IV Infusion', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:4,unit:'mcg/mL',form:'200 mcg/2 mL · ขวด 2 mL · Precedex® / Dexdor® | ผสม: 200 mcg + 48 mL NSS = 4 mcg/mL (50 mL syringe)'},
+  concentration:{value:4,unit:'mcg/mL',form:'4 mcg/mL · Precedex®',options:[{value:4,label:'4 mcg/mL (200mcg + 48mL NSS = 50mL) · standard'},{value:8,label:'8 mcg/mL (200mcg + 23mL NSS = 25mL) · concentrated'}]},
   class:'Alpha-2 adrenoceptor agonist (highly selective: α2:α1 = 1600:1)',
   mechanism:'α₂-receptor agonist in locus coeruleus → ↓ norepinephrine → sedation resembling natural sleep (arousable). Analgesic sparing (dorsal horn α₂). ↓ MAC 30–50%. Sympatholytic: ↓ HR, ↓ BP',
   onset:'Loading 10–20 min / infusion 5–10 min', duration:'Stop → offset 20–30 min', halflife:'t½ 2 hr',
@@ -862,7 +882,7 @@ const DRUGS = [
 {
   id:'epi', name:'Epinephrine', brand:'Adrenaline®, EpiPen®',
   group:'Emergency', route:'IV/IM/ET/IO', alertLevel:'red', alert:'EMERGENCY',
-  concentration:{value:0.1,unit:'mg/mL',form:'1 mg/mL (1:1000) · amp 1 mL · GPO | สำหรับ IV: dilute 1 mg + 9 mL NSS = 0.1 mg/mL (1:10,000) | สำหรับ IM anaphylaxis: ใช้ 1:1000 โดยตรง'},
+  concentration:{value:0.1,unit:'mg/mL',form:'0.1 mg/mL · IV use',options:[{value:0.1,label:'0.1 mg/mL 1:10,000 (1mg + 9mL NSS) · IV bolus'},{value:1.0,label:'1 mg/mL 1:1000 (amp 1mL) · IM anaphylaxis'},{value:0.02,label:'0.02 mg/mL (1mg + 49mL NSS) · infusion dilute'}]},
   class:'Endogenous catecholamine — α & β agonist',
   mechanism:'α₁: vasoconstriction (↑ SVR, ↑ CPP during CPR) | β₁: ↑HR, ↑contractility | β₂: bronchodilation, vasodilation (muscle) | β₂: mast cell ↓ histamine (anaphylaxis)',
   onset:'Immediate IV', duration:'3–5 min', halflife:'t½ 2 min',
@@ -890,7 +910,7 @@ const DRUGS = [
 {
   id:'atro', name:'Atropine', brand:'Atropine sulfate',
   group:'Emergency', route:'IV/IM/ET/IO', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:0.6,unit:'mg/mL',form:'0.6 mg/mL · amp 1 mL (0.6 mg) · GPO | มีทั้ง 0.5 mg/mL และ 1 mg/mL ในบางรพ. — ตรวจสอบ label ก่อนใช้'},
+  concentration:{value:0.6,unit:'mg/mL',form:'0.6 mg/mL · GPO',options:[{value:0.6,label:'0.6 mg/mL (amp 1mL/0.6mg) · GPO ไทย'},{value:0.5,label:'0.5 mg/mL (amp 1mL/0.5mg) · สากล'},{value:1.0,label:'1 mg/mL (amp 1mL/1mg) · บาง รพ.'}]},
   class:'Antimuscarinic — competitive muscarinic ACh antagonist',
   mechanism:'Competitive M2 receptor antagonist → blocks vagal tone → ↑HR | M3 → ↓ secretions, bronchodilation, ↓ GI motility | CNS: anticholinergic effects',
   onset:'1–2 min IV', duration:'30–60 min', halflife:'t½ 2–3 hr',
@@ -916,7 +936,7 @@ const DRUGS = [
 {
   id:'eph', name:'Ephedrine', brand:'Ephedrine hydrochloride',
   group:'Vasoactive', route:'IV/IM', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:50,unit:'mg/mL',form:'50 mg/mL · amp 1 mL (50 mg) · GPO | ผสมก่อนใช้: 50 mg + 9 mL NSS = 5 mg/mL (10 mL syringe)'},
+  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL · diluted',options:[{value:5,label:'5 mg/mL (50mg + 9mL NSS = 10mL) · ready to use'},{value:50,label:'50 mg/mL (amp 1mL) · undiluted GPO'}]},
   class:'Indirect sympathomimetic — α & β agonist + NE release',
   mechanism:'Indirect: displaces NE from presynaptic vesicles | Direct α & β agonist activity | ↑ HR, ↑ BP, bronchodilation | Crosses BBB → mild CNS stimulation',
   onset:'1 min IV', duration:'10–15 min IV', halflife:'t½ 3–6 hr',
@@ -939,7 +959,7 @@ const DRUGS = [
 {
   id:'phen', name:'Phenylephrine', brand:'Neo-Synephrine®',
   group:'Vasoactive', route:'IV', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:100,unit:'mcg/mL',form:'ไม่มีสำเร็จรูป — ต้อง dilute เสมอ | 10 mg/mL amp + 99 mL NSS = 100 mcg/mL | หรือ 1 mg + 9 mL = 100 mcg/mL'},
+  concentration:{value:100,unit:'mcg/mL',form:'100 mcg/mL · diluted',options:[{value:100,label:'100 mcg/mL (10mg + 99mL NSS = 100mL)'},{value:100,label:'100 mcg/mL (1mg + 9mL NSS = 10mL)'},{value:200,label:'200 mcg/mL (10mg + 49mL NSS = 50mL)'}]},
   class:'Selective α₁-adrenergic agonist (pure vasoconstrictor)',
   mechanism:'Selective α₁ receptor agonist → arterial vasoconstriction → ↑ SVR → ↑ BP. ไม่มี β effect → reflex bradycardia (baroreceptor), ↓ HR, ↓ CO ถ้าไม่ pre-treat',
   onset:'1 min IV', duration:'10–20 min IV', halflife:'t½ 2–3 hr',
@@ -963,7 +983,7 @@ const DRUGS = [
 {
   id:'nora', name:'Norepinephrine', brand:'Levophed®, Noradrenaline®',
   group:'Vasoactive', route:'IV Infusion (central line preferred)', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:0.08,unit:'mg/mL',form:'4 mg/4 mL (1 mg/mL) · amp 4 mL · GPO | ผสม: 4 mg + 46 mL D5W = 80 mcg/mL (50 mL) | หรือ 4 mg + 246 mL = 16 mcg/mL (250 mL bag)'},
+  concentration:{value:0.08,unit:'mg/mL',form:'80 mcg/mL · standard',options:[{value:0.08,label:'80 mcg/mL (4mg + 46mL D5W = 50mL syringe)'},{value:0.016,label:'16 mcg/mL (4mg + 246mL D5W = 250mL bag)'},{value:0.04,label:'40 mcg/mL (4mg + 96mL D5W = 100mL)'}]},
   class:'Endogenous catecholamine — α₁α₂>β₁; no β₂',
   mechanism:'Potent α₁ vasoconstriction → ↑↑ SVR → ↑ MAP. Mild β₁: maintains/slightly ↑ HR. Reflex bradycardia อาจเกิด. No β₂ → no bronchodilation. Gold standard vasopressor for septic shock',
   onset:'1–2 min', duration:'2–5 min after stop', halflife:'t½ 2–3 min',
@@ -985,7 +1005,7 @@ const DRUGS = [
 {
   id:'vaso', name:'Vasopressin', brand:'Pitressin®, Vasostrict®',
   group:'Vasoactive', route:'IV', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:20,unit:'units/mL',form:'20 units/mL · amp 1 mL (20 units) · Pitressin® | หายากในไทย — มีใน รพ.ใหญ่/tertiary center'},
+  concentration:{value:20,unit:'units/mL',form:'20 units/mL · Pitressin®',options:[{value:20,label:'20 units/mL (amp 1mL/20u) · undiluted'},{value:1,label:'1 unit/mL (20u + 19mL NSS = 20mL) · infusion'}]},
   class:'Antidiuretic hormone (ADH) analogue — V1a & V2 receptor',
   mechanism:'V1a receptor: vasoconstriction (splanchnic, skin) | V2 receptor: ↑ H2O reabsorption | V1a: coronary dilation (unlike NE) | Catecholamine-sparing | ไม่ขึ้นกับ adrenergic receptor → effective ใน catecholamine-depleted state',
   onset:'2–5 min', duration:'20–30 min bolus / continuous infusion', halflife:'t½ 10–20 min',
@@ -1009,7 +1029,7 @@ const DRUGS = [
 {
   id:'dopa', name:'Dopamine', brand:'Intropin®, Dopamine HCl',
   group:'Vasoactive', route:'IV Infusion', alertLevel:'red', alert:'HIGH ALERT',
-  concentration:{value:50,unit:'mg/mL',form:'250 mg/5 mL (50 mg/mL) · ขวด 5 mL · GPO | ผสม: 250 mg + 245 mL D5W = 1000 mcg/mL (250 mL) | หรือ 250 mg + 48 mL = 5000 mcg/mL (50 mL syringe)'},
+  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL · diluted',options:[{value:5,label:'5000 mcg/mL = 5mg/mL (250mg + 48mL D5W = 50mL)'},{value:1,label:'1000 mcg/mL = 1mg/mL (250mg + 245mL D5W = 250mL)'}]},
   class:'Catecholamine — DA, β₁, α₁ (dose-dependent)',
   mechanism:'Dose-dependent: <3 mcg/kg/min → DA₁ (↑ renal blood flow, GFR); 3–10 → β₁ (↑ CO, HR); >10 → α₁ dominant (↑ SVR). "Renal dose dopamine" (1–3) — clinical benefit disproven',
   onset:'2–4 min', duration:'10 min after stop', halflife:'t½ 2 min',
@@ -1033,7 +1053,7 @@ const DRUGS = [
 {
   id:'sug', name:'Sugammadex', brand:'Bridion®',
   group:'Reversal', route:'IV', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:100,unit:'mg/mL',form:'200 mg/2 mL (100 mg/mL) · ขวด 2 mL · Bridion® | ราคาสูง — ใช้ตาม indication เท่านั้น'},
+  concentration:{value:100,unit:'mg/mL',form:'100 mg/mL · Bridion®',options:[{value:100,label:'100 mg/mL (ขวด 2mL/200mg) · Bridion®'},{value:100,label:'100 mg/mL (ขวด 5mL/500mg) · Bridion®'}]},
   class:'Modified gamma-cyclodextrin — selective NMB encapsulator',
   mechanism:'Encapsulates Rocuronium/Vecuronium in 1:1 complex → removes from NMJ → immediate plasma sequestration → complete reversal. ไม่ใช่ ChE inhibitor → ไม่ต้องการ Atropine',
   onset:'3 min (dose-dependent)', duration:'Permanent (complex ออก renal)', halflife:'t½ complex = t½ renal clearance',
@@ -1058,7 +1078,7 @@ const DRUGS = [
 {
   id:'neost', name:'Neostigmine', brand:'Prostigmin®',
   group:'Reversal', route:'IV/IM/SC', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:0.5,unit:'mg/mL',form:'0.5 mg/mL · amp 1 mL (0.5 mg) · GPO | amp 5 mL (2.5 mg) · ใช้คู่กับ Atropine เสมอ'},
+  concentration:{value:0.5,unit:'mg/mL',form:'0.5 mg/mL · GPO',options:[{value:0.5,label:'0.5 mg/mL (amp 1mL/0.5mg) · GPO'},{value:0.5,label:'0.5 mg/mL (amp 5mL/2.5mg) · GPO'}]},
   class:'Anticholinesterase — reversible AChE inhibitor',
   mechanism:'Inhibits AChE at NMJ → ↑ ACh accumulation → competitive displacement of NMB from nicotinic receptor → NMB reversal. Muscarinic side effects (bradycardia, secretions) → MUST give with Atropine/Glycopyrrolate',
   onset:'5–10 min', duration:'20–60 min', halflife:'t½ 60–90 min',
@@ -1080,7 +1100,7 @@ const DRUGS = [
 {
   id:'nalox', name:'Naloxone', brand:'Narcan®, Evzio®',
   group:'Reversal', route:'IV/IM/SC/IN', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:0.4,unit:'mg/mL',form:'0.4 mg/mL · amp 1 mL (0.4 mg) · GPO | Narcan® 0.4 mg/mL | ในไทยมักใช้ amp 1 mL เท่านั้น'},
+  concentration:{value:0.4,unit:'mg/mL',form:'0.4 mg/mL · GPO',options:[{value:0.4,label:'0.4 mg/mL (amp 1mL/0.4mg) · GPO'},{value:0.04,label:'0.04 mg/mL (dilute: 0.4mg + 9mL NSS) · titration'}]},
   class:'Opioid receptor antagonist — pure competitive antagonist',
   mechanism:'Competitive antagonist at μ>κ>δ opioid receptors → displaces opioid → rapid reversal of opioid effects including respiratory depression. No agonist activity',
   onset:'1–2 min IV', duration:'30–90 min (SHORTER than most opioids → re-narcotization)', halflife:'t½ 1–2 hr',
@@ -1106,7 +1126,7 @@ const DRUGS = [
 {
   id:'flum', name:'Flumazenil', brand:'Anexate®, Romazicon®',
   group:'Reversal', route:'IV', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:0.1,unit:'mg/mL',form:'0.1 mg/mL · ขวด 5 mL (0.5 mg) · Anexate® | หายากในไทย — ต้องสั่งพิเศษ'},
+  concentration:{value:0.1,unit:'mg/mL',form:'0.1 mg/mL · Anexate®',options:[{value:0.1,label:'0.1 mg/mL (ขวด 5mL/0.5mg) · Anexate®'},{value:0.1,label:'0.1 mg/mL (ขวด 10mL/1mg) · Romazicon®'}]},
   class:'Benzodiazepine antagonist — competitive GABA-A receptor antagonist',
   mechanism:'Competitive antagonist at benzodiazepine binding site of GABA-A receptor → reverses BZD sedation, amnesia, respiratory depression. Short-acting → re-sedation common',
   onset:'1–2 min IV', duration:'30–90 min (re-sedation risk)', halflife:'t½ 50–70 min (SHORTER than most BZD)',
@@ -1130,7 +1150,7 @@ const DRUGS = [
 {
   id:'ond', name:'Ondansetron', brand:'Zofran®, Ondaron®',
   group:'Antiemetic', route:'IV/PO', alertLevel:'green', alert:'SAFE',
-  concentration:{value:2,unit:'mg/mL',form:'2 mg/mL · amp 2 mL (4 mg) · GPO / Zofran® | amp 4 mL (8 mg) | ฉีดช้า >30 วินาที'},
+  concentration:{value:2,unit:'mg/mL',form:'2 mg/mL · GPO',options:[{value:2,label:'2 mg/mL (amp 2mL/4mg) · GPO / Zofran®'},{value:2,label:'2 mg/mL (amp 4mL/8mg) · GPO / Zofran®'}]},
   class:'Selective 5-HT₃ receptor antagonist',
   mechanism:'Selective antagonist at 5-HT₃ receptors (peripheral vagal nerve endings + CTZ) → blocks serotonin-mediated N/V signaling. No dopamine/histamine effect',
   onset:'5–10 min IV', duration:'4–8 hr', halflife:'t½ 4 hr',
@@ -1154,7 +1174,7 @@ const DRUGS = [
 {
   id:'dex2', name:'Dexamethasone', brand:'Decadron®, Fortecortin®',
   group:'Antiemetic', route:'IV/IM/PO', alertLevel:'green', alert:'SAFE',
-  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL · amp 1 mL (5 mg) · GPO | amp 2 mL (10 mg) | Decadron® 4 mg/mL (ต่างกัน — ตรวจสอบ label)'},
+  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL · GPO',options:[{value:5,label:'5 mg/mL (amp 1mL/5mg) · GPO'},{value:5,label:'5 mg/mL (amp 2mL/10mg) · GPO'},{value:4,label:'4 mg/mL · Decadron® (ตรวจ label)'}]},
   class:'Glucocorticoid — mechanism for PONV: anti-inflammatory + ↓ prostaglandin + serotonin modulation',
   mechanism:'Glucocorticoid receptor binding → ↓ prostaglandins, ↓ inflammatory mediators → PONV effect likely via ↓ CTZ prostaglandin. Also: ↑ brain 5-HT₃ + opioid receptor sensitivity (Unclear exact mechanism) | Analgesic anti-inflammatory | ↓ Airway edema',
   onset:'30 min–1 hr (PONV); 6–12 hr (anti-inflammatory)', duration:'12–36 hr', halflife:'t½ 190 min (plasma); biological t½ 36–54 hr',
@@ -1180,7 +1200,7 @@ const DRUGS = [
 {
   id:'metoclo', name:'Metoclopramide', brand:'Maxolon®, Plasil®, Reglan®',
   group:'Antiemetic', route:'IV/IM/PO', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL · amp 2 mL (10 mg) · GPO / Plasil® | ฉีดช้า >2 นาที'},
+  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL · GPO',options:[{value:5,label:'5 mg/mL (amp 2mL/10mg) · GPO / Plasil®'}]},
   class:'Dopamine D2 antagonist + 5-HT₄ agonist + 5-HT₃ antagonist (at high dose)',
   mechanism:'D2 receptor antagonist in CTZ + gut → ↓ N/V | 5-HT₄ agonist → ↑ gastric motility (prokinetic) | ↑ Lower esophageal sphincter tone | Crosses BBB → EPS risk',
   onset:'1–3 min IV', duration:'1–2 hr', halflife:'t½ 5–6 hr',
@@ -1204,7 +1224,7 @@ const DRUGS = [
 {
   id:'keto', name:'Ketorolac', brand:'Toradol®, Ketoflam®',
   group:'Analgesic', route:'IV/IM', alertLevel:'orange', alert:'CAUTION',
-  concentration:{value:30,unit:'mg/mL',form:'30 mg/mL · amp 1 mL (30 mg) · Toradol® / Ketoflam® | ในไทยมักมีขนาด 30 mg/mL เท่านั้น'},
+  concentration:{value:30,unit:'mg/mL',form:'30 mg/mL · Toradol®',options:[{value:30,label:'30 mg/mL (amp 1mL/30mg) · Toradol® / Ketoflam®'},{value:15,label:'15 mg/mL (dilute: 30mg + 1mL NSS) · ผู้สูงอายุ'}]},
   class:'NSAID — non-selective COX inhibitor (potent parenteral NSAID)',
   mechanism:'Non-selective COX-1/COX-2 inhibition → ↓ prostaglandin synthesis → anti-inflammatory, analgesic, antipyretic. No opioid receptor → no respiratory depression. Opioid-sparing 25–45%',
   onset:'10–30 min IV', duration:'6–8 hr', halflife:'t½ 4–6 hr',
@@ -1226,7 +1246,7 @@ const DRUGS = [
 {
   id:'paracet', name:'Paracetamol (IV)', brand:'Perfalgan®, Ofirmev®',
   group:'Analgesic', route:'IV/PO/PR', alertLevel:'green', alert:'SAFE',
-  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL · ถุง 100 mL (1000 mg) · Perfalgan® / Paracetamol IV GPO | หยด IV 15 นาที — ห้าม IV push'},
+  concentration:{value:10,unit:'mg/mL',form:'10 mg/mL · Perfalgan®',options:[{value:10,label:'10 mg/mL (ถุง 100mL/1000mg) · Perfalgan® / GPO'},{value:10,label:'10 mg/mL (ถุง 50mL/500mg) · สำหรับ <50kg'}]},
   class:'Para-aminophenol — central COX inhibitor + endocannabinoid / serotonergic modulation',
   mechanism:'Central COX-2 inhibition + descending serotonergic pathway activation + possible endocannabinoid (AEA inhibitor). No peripheral anti-inflammatory. No platelet effect. No GI toxicity',
   onset:'5–10 min IV', duration:'4–6 hr', halflife:'t½ 2–3 hr',
@@ -1250,7 +1270,7 @@ const DRUGS = [
 {
   id:'dexmeth', name:'Dexamethasone (Analgesic)', brand:'Decadron®',
   group:'Analgesic', route:'IV', alertLevel:'green', alert:'SAFE',
-  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL · amp 1 mL (5 mg) · GPO | amp 2 mL (10 mg) | ใช้ขวดเดียวกับ Dexamethasone antiemetic'},
+  concentration:{value:5,unit:'mg/mL',form:'5 mg/mL · GPO',options:[{value:5,label:'5 mg/mL (amp 1mL/5mg) · GPO'},{value:5,label:'5 mg/mL (amp 2mL/10mg) · GPO'},{value:4,label:'4 mg/mL · Decadron® (ตรวจ label)'}]},
   class:'Glucocorticoid — multimodal analgesia adjunct',
   mechanism:'↓ Peripheral prostaglandin + bradykinin production (anti-inflammatory) | ↓ C-fiber sensitization | Central sensitization ↓ | Membrane stabilization | Synergistic with local anesthetics in nerve blocks (↑ duration 50–100%)',
   onset:'1–2 hr', duration:'12–36 hr for analgesic effect', halflife:'t½ 190 min plasma',
@@ -1358,6 +1378,32 @@ function clearSearch(){
 /* ================================================================
    SELECT DRUG → render right panel
 ================================================================ */
+/* active concentration per drug */
+const activeConcMap = {};
+
+function updateConc(drugId, val) {
+  activeConcMap[drugId] = parseFloat(val);
+  if(selDrug && selDrug.id === drugId) {
+    // save scroll position
+    const rightEl = document.getElementById('right');
+    const scrollY = rightEl ? rightEl.scrollTop : 0;
+    renderRight(selDrug);
+    // restore dropdown + scroll
+    setTimeout(()=>{
+      const sel = document.getElementById('concSel');
+      if(sel) sel.value = val;
+      const badge = document.getElementById('concVal');
+      if(badge) badge.textContent = val;
+      if(rightEl) rightEl.scrollTop = scrollY;
+    }, 20);
+  }
+}
+
+function getActiveConc(drug) {
+  if(activeConcMap[drug.id] !== undefined) return activeConcMap[drug.id];
+  return drug.concentration.value;
+}
+
 function selectDrug(id){
   selDrug = DRUGS.find(d=>d.id===id);
   if(!selDrug) return;
@@ -1395,6 +1441,16 @@ function renderRight(d){
     <!-- CALC -->
     <div class="dcalc">
       <div class="calc-label">🧮 คำนวณ Dose — ${ptype==='adult'?'ผู้ใหญ่':'เด็ก'}</div>
+      ${d.concentration.options ? `
+      <div class="conc-sel-wrap">
+        <span class="conc-sel-label">💊 เลือกขนาด Concentration</span>
+        <select class="conc-sel" id="concSel" onchange="updateConc('${d.id}', this.value)">
+          ${d.concentration.options.map((o,i)=>{const ac=activeConcMap[d.id];const sel=(ac!==undefined?o.value===ac:i===0)?'selected':'';return `<option value="${o.value}" ${sel}>${o.label}</option>`;}).join('')}
+        </select>
+        <div class="conc-badge" id="concBadge">
+          ⚗️ ใช้: <span id="concVal">${getActiveConc(d)}</span> ${d.concentration.unit}/mL
+        </div>
+      </div>` : ''}
       ${w===0 ? `<div class="nw">⚖️ กรอกน้ำหนักผู้ป่วยที่ Header เพื่อคำนวณ dose อัตโนมัติ</div>` : ''}
       ${renderResultBox(d, dd, w)}
     </div>
@@ -1517,9 +1573,10 @@ function renderDoseRows(d, dd, w){
     let calcHtml = '';
     if(v.mgPerKg && w>0){
       const dose = Math.min(v.mgPerKg*w, v.max||9999);
-      const vol = d.concentration.value>0 ? dose/d.concentration.value : 0;
+      const ac = getActiveConc(d);
+      const vol = ac>0 ? dose/ac : 0;
       const maxed = v.max && (v.mgPerKg*w)>v.max;
-      calcHtml = `<div class="dr-calc ${maxed?'warn':''}">${dose.toFixed(2)} ${d.concentration.unit}${vol>0?` = ${vol.toFixed(2)} mL`:''}${maxed?` ⚠️MAX`:''}</div>`;
+      calcHtml = `<div class="dr-calc ${maxed?'warn':''}">${dose.toFixed(2)} ${d.concentration.unit}${vol>0?` = ${vol.toFixed(2)} mL (${ac} ${d.concentration.unit}/mL)`:''}${maxed?` ⚠️MAX`:''}</div>`;
     }
     return `<div class="dose-row">
       <div class="dr-head">
