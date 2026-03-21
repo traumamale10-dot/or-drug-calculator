@@ -65,7 +65,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
 .logo p{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px}
 .hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px}
 
-/* weight bar in header */
+/* weight bar */
 .w-bar{display:flex;align-items:center;gap:8px;
   background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
   border-radius:var(--r4);padding:6px 14px 6px 10px}
@@ -78,9 +78,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
 /* pedi toggle */
 .p-toggle{display:flex;background:rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.14);border-radius:var(--r4);overflow:hidden}
-.pt-btn{padding:8px 14px;font-size:12px;font-weight:700;color:rgba(255,255,255,.55);
+.pt-btn{padding:10px 18px;font-size:14px;font-weight:700;color:rgba(255,255,255,.55);
   cursor:pointer;border:none;background:none;font-family:var(--font);
-  transition:all .2s;white-space:nowrap}
+  transition:all .2s;white-space:nowrap;min-width:72px;text-align:center}
 .pt-btn.on{background:var(--acc);color:#fff;border-radius:var(--r4)}
 
 /* theme pill */
@@ -96,6 +96,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
 .moon{left:6px;opacity:0;transition:opacity .2s}
 [data-theme=dark] .sun{opacity:0}
 [data-theme=dark] .moon{opacity:1}
+
+/* mobile subbar */
+.subbar{display:none;background:var(--hdr);border-top:1px solid rgba(255,255,255,.08);
+  padding:10px 16px;gap:10px;align-items:center}
+.subbar .w-bar{flex:1}
+.subbar .w-bar input{width:100%}
+.subbar .p-toggle{flex:0 0 auto}
 
 /* ── MAIN LAYOUT ─────────────────────────────────────────── */
 .wrap{max-width:1260px;margin:0 auto;padding:24px 20px;
@@ -333,10 +340,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
   .dname{font-size:26px}
   .dcalc,.dose-sec,.detail-sec{padding:18px 22px}
 }
-@media(max-width:560px){
-  .hi{padding:10px 14px;flex-wrap:wrap;gap:8px}
+@media(max-width:640px){
+  .hi{padding:10px 14px}
   .logo h1{font-size:16px}
-  .w-bar{order:3;width:100%}
+  /* hide w-bar and p-toggle from header on mobile */
+  .hdr-right .w-bar{display:none}
+  .hdr-right .p-toggle{display:none}
+  /* show subbar */
+  .subbar{display:flex}
   .rbox{grid-template-columns:1fr}
   .rcell{border-right:none;border-bottom:1px solid rgba(255,255,255,.15);
     padding:12px 0;text-align:left}
@@ -371,8 +382,25 @@ body{font-family:var(--font);background:var(--bg);color:var(--t1);
         <span class="tico sun">☀️</span>
         <span class="tico moon">🌙</span>
       </button>
-
     </div>
+  </div>
+  <!-- mobile subbar -->
+  <div class="subbar">
+    <div class="w-bar" style="flex:1">
+      <label>⚖️</label>
+      <input id="gweight2" type="number" placeholder="น้ำหนัก kg" min="0.5" max="350" step="0.1"
+        oninput="syncWeight(this.value)" style="width:100%;font-size:18px">
+      <span>kg</span>
+    </div>
+    <div class="p-toggle">
+      <button class="pt-btn on" id="btn-a2" onclick="setPtype('adult')" style="min-width:80px;padding:12px 20px;font-size:15px">ผู้ใหญ่</button>
+      <button class="pt-btn" id="btn-p2" onclick="setPtype('pedi')" style="min-width:80px;padding:12px 20px;font-size:15px">เด็ก</button>
+    </div>
+    <button class="tpill" onclick="toggleTheme()">
+      <div class="tknob"></div>
+      <span class="tico sun">☀️</span>
+      <span class="tico moon">🌙</span>
+    </button>
   </div>
 </header>
 
@@ -1310,9 +1338,15 @@ function toggleTheme(){
 ================================================================ */
 function setPtype(t){
   ptype = t;
-  document.getElementById('btn-a').classList.toggle('on', t==='adult');
-  document.getElementById('btn-p').classList.toggle('on', t==='pedi');
+  ['btn-a','btn-a2'].forEach(id=>{ const el=document.getElementById(id); if(el) el.classList.toggle('on', t==='adult'); });
+  ['btn-p','btn-p2'].forEach(id=>{ const el=document.getElementById(id); if(el) el.classList.toggle('on', t==='pedi'); });
   if(selDrug) renderRight(selDrug);
+}
+
+function syncWeight(val){
+  const other = document.getElementById('gweight');
+  if(other) other.value = val;
+  recalc();
 }
 
 /* ================================================================
